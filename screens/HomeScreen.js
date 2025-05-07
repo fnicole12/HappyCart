@@ -26,12 +26,28 @@ export default function HomeScreen() {
 
       {/*opciones*/}
       <View style={styles.opcionesContainer}>
-        {opciones.map((item) => (
-          <TouchableOpacity key={item.id} style={styles.opcion}>
-            <Ionicons name={item.icon} size={24} color="white" />
-            <Text style={styles.opcionTexto}>{item.nombre}</Text>
-          </TouchableOpacity>
-        ))}
+      {opciones.map((item) => (
+        <TouchableOpacity
+        key={item.id}
+        style={styles.opcion}
+        onPress={() => {
+        if (item.id === 1) {
+        //boton de nueva lista vacia
+        const nuevaLista = {
+          id: Date.now().toString(),
+          titulo: 'Nueva lista',
+          productos: [],
+          fecha: new Date().toLocaleDateString('es-MX'),
+          miembro: 'Tú',
+        };
+        navigation.navigate('ListaDetalles', { lista: nuevaLista });
+        }
+      }}>
+    <Ionicons name={item.icon} size={24} color="white" />
+    <Text style={styles.opcionTexto}>{item.nombre}</Text>
+  </TouchableOpacity>
+))}
+
       </View>
 
       {/*listas*/}

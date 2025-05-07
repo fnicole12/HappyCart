@@ -1,0 +1,5 @@
+setup.py
+ingredientes_buscar.egg-info/PKG-INFO
+ingredientes_buscar.egg-info/SOURCES.txt
+ingredientes_buscar.egg-info/dependency_links.txt
+ingredientes_buscar.egg-info/top_level.txt
