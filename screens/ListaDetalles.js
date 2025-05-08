@@ -101,6 +101,15 @@ export default function ListaDetalle() {
           </TouchableOpacity>
         ))}
       </View>
+
+      <View>
+        <TouchableOpacity
+          style={styles.iniciarCompraBtn}
+          onPress={() => navigation.navigate('Compra', { listaId: lista.id })}> 
+          {/*pasamos el id a la pantalla compra screen*/}
+          <Text style={{ color: 'white', fontWeight: 'bold' }}>Iniciar compra</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 }
@@ -204,5 +213,13 @@ const styles = StyleSheet.create({
       borderRadius: 20,
       marginLeft: 8,
     },
+    iniciarCompraBtn: {
+      backgroundColor: '#f5ac70',
+      padding: 12,
+      borderRadius: 8,
+      alignItems: 'center',
+      marginTop: 20,
+    },
+    
   });
   
