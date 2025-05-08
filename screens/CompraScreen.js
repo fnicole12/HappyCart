@@ -3,7 +3,6 @@ import {View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView, Switch,
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { listasDeMandado } from '../data/mockData';
-import CheckBox from '@react-native-community/checkbox';
 
 export default function CompraScreen() {
     const navigation = useNavigation();
