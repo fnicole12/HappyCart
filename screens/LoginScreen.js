@@ -1,25 +1,71 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import{ useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+
+const URL = "http://10.96.3.54:8000"; //cambiar segun necesario
 
 export default function LoginScreen() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async () => {
+    try{
+      const URL_LOGIN = URL + "/login";
+      const response = await fetch(URL_LOGIN, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+      const data = await response.json();
+      console.log("Respuesta API: ", data);
+      
+      if(response.ok)
+        Alert.alert('Login exitoso');
+      else
+        Alert.alert(data.detail || 'Error al iniciar sesión');
+
+    }catch(error){
+      console.log(error);
+      console.log('No se pudo conectar al servidor');
+    }
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
         <Image source={require('../assets/logo.png')} style={styles.logo} />
       </View>
       <View style={styles.formContainer}>
+
         <Text style={styles.title}>Log in</Text>
-        <TextInput placeholder="Email Address" style={styles.input} />
-        <TextInput placeholder="Password" secureTextEntry style={styles.input} />
+        <TextInput 
+        placeholder="Email Address"
+        style={styles.input}
+        value={email}
+        onChangeText={setEmail} 
+        />
+        <TextInput 
+        placeholder="Password" 
+        //secureTextEntry 
+        style={styles.input}
+        value={password}
+        onChangeText={setPassword}
+        />
+
         <Text style={styles.forgot}>Forgot Password?</Text>
 
-        <TouchableOpacity style={styles.loginButton}>
-          <Text style={styles.loginText}>Log in</Text>
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+        <Text style={styles.loginText}>Log in</Text>
         </TouchableOpacity>
 
+
         <Text style={styles.orText}>or</Text>
-        <Text style={styles.signupText}>
-          Don’t have an account? <Text style={styles.signupLink}>Sign up</Text>
+        <Text style={styles.signupText}>Don't have an account? <Text style={styles.signupLink}>Sign up</Text>
         </Text>
       </View>
     </View>
