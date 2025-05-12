@@ -46,3 +46,39 @@ export const listasDeMandado = [
     'Pollo',
   ];
   
+  export const historialCompras = [
+    {
+      id: '1',
+      nombre: 'Compra 1',
+      supermercado: 'Supermercado A',
+      fecha: '1/01/25',
+      productos: [
+        { id: 'p1', nombre: 'Shampoo', cantidad: 1, precio: 40 },
+        { id: 'p2', nombre: 'Pepino', cantidad: 5, precio: 30 },
+      ],
+      total: 70,
+    },
+    {
+      id: '2',
+      nombre: 'Compra 2',
+      supermercado: 'Supermercado B',
+      fecha: '2/02/25',
+      productos: [
+        { id: 'p1', nombre: 'Huevos', cantidad: 1, precio: 90 },
+        { id: 'p2', nombre: 'Carne', cantidad: 2, precio: 200 },
+      ],
+      total: 290,
+    },
+    {
+      id: '3',
+      nombre: 'Compra 3',
+      supermercado: 'Supermercado C',
+      fecha: '3/03/25',
+      productos: [
+        { id: 'p1', nombre: 'Naranjas', cantidad: 6, precio: 50 },
+        { id: 'p2', nombre: 'Pollo', cantidad: 2, precio: 300 },
+      ],
+      total: 350,
+    },
+  ];
+  

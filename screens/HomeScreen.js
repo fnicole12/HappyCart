@@ -1,4 +1,3 @@
-import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; //para los iconos
 import { listasDeMandado, sugerenciasAnteriores, resultadosBusqueda } from '../data/mockData';
@@ -41,6 +40,9 @@ export default function HomeScreen() {
           miembro: 'Tú',
         };
         navigation.navigate('ListaDetalles', { lista: nuevaLista });
+        }
+        else if(item.id === 2){
+          navigation.navigate('HistorialScreen');
         }
       }}>
     <Ionicons name={item.icon} size={24} color="white" />
