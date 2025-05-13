@@ -7,16 +7,16 @@ import { sugerenciasAnteriores, resultadosBusqueda } from '../data/mockData';
 
 
 export default function ListaDetalle() {
-    const route = useRoute();
-    const navigation = useNavigation();
+  const route = useRoute();
+  const navigation = useNavigation();
     
-    const lista = route.params?.lista ?? {
-      id: '0',
-      titulo: 'Lista sin nombre',
-      productos: [],
-      fecha: '',
-      miembro: '',
-    };
+  const lista = route.params?.lista ?? {
+    id: '0',
+    titulo: 'Lista sin nombre',
+    productos: [],
+    fecha: '',
+    miembro: '',
+  };
     
   
   const [nombreLista, setNombreLista] = useState(lista.titulo);
