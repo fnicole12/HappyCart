@@ -1,23 +1,55 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
+const URL = "http://192.168.100.33:8000";   //cambiar segun necesario
 
 export default function SignUpScreen() {
-  const [nombre, setNombre] = useState('');
-  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
-  const route = useRoute();
   const navigation = useNavigation();
 
-  const handleSignUp = () => {
-    console.log('Registrando usuario:', { nombre, email, password, confirmPassword });
+  const handleSignUp = async () => {
+    if(password !== confirmPassword) {
+      alert('Las contraseñas no coinciden');
+      return;
+    }
+
+    try{
+      const URL_LOGIN = URL + "/signup";
+      const response = await fetch(URL_LOGIN, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          phone,
+          password,
+        }),
+      });
+      const data = await response.json();
+      console.log("Respuesta API: ", data);
+
+      if(response.ok){
+        alert('Registro exitoso');
+        navigation.navigate('Login');
+      }
+      else
+        alert(data.detail || 'Error al registrarse');
+
+    }catch(error){
+      console.log(error);
+      alert('Error al registrarse');
+    }
   };
+
 
   return (
     <View style={styles.container}>
@@ -27,28 +59,28 @@ export default function SignUpScreen() {
         <Image source={require('../assets/logo.png')} style={styles.logo} />
 
         <View style={styles.formContainer}>
-        <Text style={styles.title}>Sign up</Text>
+        <Text style={styles.title}>Regístrate</Text>
 
         <TextInput
             style={styles.input}
             placeholder="Nombre"
             placeholderTextColor="#ccc"
-            value={nombre}
-            onChangeText={setNombre}
+            value={name}
+            onChangeText={setName}
         />
 
         <TextInput
             style={styles.input}
-            placeholder="Email Address"
+            placeholder="Teléfono"
             placeholderTextColor="#ccc"
-            value={email}
-            onChangeText={setEmail}
+            value={phone}
+            onChangeText={setPhone}
         />
 
         <View style={styles.passwordContainer}>
             <TextInput
             style={styles.inputPassword}
-            placeholder="Password"
+            placeholder="Contraseña"
             placeholderTextColor="#ccc"
             secureTextEntry={!showPassword}
             value={password}
@@ -62,7 +94,7 @@ export default function SignUpScreen() {
         <View style={styles.passwordContainer}>
             <TextInput
             style={styles.inputPassword}
-            placeholder="Confirm password"
+            placeholder="Confirmar Contraseña"
             placeholderTextColor="#ccc"
             secureTextEntry={!showConfirmPassword}
             value={confirmPassword}
@@ -74,7 +106,7 @@ export default function SignUpScreen() {
         </View>
 
         <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
-            <Text style={styles.signUpText}>Sign up</Text>
+            <Text style={styles.signUpText}>Confirmar</Text>
         </TouchableOpacity>
         </View>
     </View>

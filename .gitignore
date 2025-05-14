@@ -34,5 +34,8 @@ yarn-error.*
 .env*.local
 MongoAPI/.env
 
+# python cache
+MongoAPI/__pycache__
+
 # typescript
 *.tsbuildinfo
