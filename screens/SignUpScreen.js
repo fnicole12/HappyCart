@@ -12,12 +12,20 @@ export default function SignUpScreen() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [createNew, setCreateNew] = useState(true);
+  const [familyId, setFamilyId] = useState('');
   
   const navigation = useNavigation();
 
   const handleSignUp = async () => {
+    //validar contraseña
     if(password !== confirmPassword) {
       alert('Las contraseñas no coinciden');
+      return;
+    }
+    //validar familia
+    if(!createNew && !familyId) {
+      alert('Por favor ingrese el ID de la familia');
       return;
     }
 
@@ -32,6 +40,8 @@ export default function SignUpScreen() {
           name,
           phone,
           password,
+          create_new: createNew,
+          family_id: familyId,
         }),
       });
       const data = await response.json();
@@ -61,6 +71,7 @@ export default function SignUpScreen() {
         <View style={styles.formContainer}>
         <Text style={styles.title}>Regístrate</Text>
 
+        {/*Nombre*/}
         <TextInput
             style={styles.input}
             placeholder="Nombre"
@@ -69,6 +80,7 @@ export default function SignUpScreen() {
             onChangeText={setName}
         />
 
+        {/*Telefono*/}
         <TextInput
             style={styles.input}
             placeholder="Teléfono"
@@ -77,6 +89,42 @@ export default function SignUpScreen() {
             onChangeText={setPhone}
         />
 
+        {/*Familia*/}
+        <View style={{ flexDirection: 'row', marginBottom: 10 }}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: createNew ? '#F5AC70' : '#ccc',
+                borderRadius: 5,
+                padding: 8,
+                marginRight: 8,
+              }}
+              onPress={() => setCreateNew(true)}
+            >
+              <Text>Crear nueva familia</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                backgroundColor: !createNew ? '#F5AC70' : '#ccc',
+                borderRadius: 5,
+                padding: 8,
+              }}
+              onPress={() => setCreateNew(false)}
+            >
+              <Text>Unirse a familia</Text>
+            </TouchableOpacity>
+          </View>
+
+          {!createNew && (
+            <TextInput
+              style={styles.input}
+              placeholder="Código de familia"
+              placeholderTextColor="#ccc"
+              value={familyId}
+              onChangeText={setFamilyId}
+            />
+          )}
+
+        {/*Contraseña*/}
         <View style={styles.passwordContainer}>
             <TextInput
             style={styles.inputPassword}

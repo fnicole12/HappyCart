@@ -28,7 +28,7 @@ export default function LoginScreen() {
       console.log("Respuesta API: ", data);
       
       if(response.ok){
-        alert('Login exitoso');
+        //alert('Login exitoso');
         navigation.navigate('HomeScreen');
       }
       else
