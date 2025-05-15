@@ -1,17 +1,50 @@
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, FlatList } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; //para los iconos
-import { listasDeMandado, sugerenciasAnteriores, resultadosBusqueda } from '../data/mockData';
-import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
+const URL = "http://192.168.100.33:8000"; //cambiar segun necesario
 
-const opciones = [
-  { id: 1, nombre: 'Nueva lista de mandado', icon: 'clipboard-outline' },
-  { id: 2, nombre: 'Ver compras anteriores', icon: 'calendar-outline' },
-  { id: 3, nombre: 'Unirte a familia', icon: 'people-outline' },
-];
-
-export default function HomeScreen() {
+export default function HomeScreen( { route }) {
   const navigation = useNavigation();
+
+  const [familyId, setFamilyId] = useState('');
+  const [phone, setPhone] = useState('');
+  const [lists, setLists] = useState([]);
+
+  //al montar el componente lee los parametros de navegación
+  useEffect(() => {
+    if (route.params && route.params.user) {
+      setFamilyId(route.params.user.family_id);
+      setPhone(route.params.user.phone);
+    }
+  }, [route.params]);
+
+  //recarga las listas cada vez que vuelve a home
+  useFocusEffect(
+    useCallback(() => {
+      if (familyId) {
+        const URL_UPDATED = URL + "/lists?family_id=" + familyId;
+        fetch(URL_UPDATED)    //http get request
+          .then(res => res.json())
+          .then(data => setLists(data.lists))
+          .catch(err => {
+            console.log(err);
+            alert("Error", "No se pudieron cargar las listas");
+          });
+      }
+    }, [familyId])
+  );
+
+  //navegar a crear lista
+  const navNewList = () => {
+    navigation.navigate('ListaDetalles', {
+      mode: 'new',
+      familyId: familyId,
+      phone: phone,
+    });
+  }
+  
 
   return (
     <View style={styles.container}>
@@ -23,54 +56,41 @@ export default function HomeScreen() {
 
       <Text style={styles.titulo}>¿Qué quieres hacer?</Text>
 
-      {/*opciones*/}
+      {/* Opciones */}
       <View style={styles.opcionesContainer}>
-      {opciones.map((item) => (
-        <TouchableOpacity
-        key={item.id}
-        style={styles.opcion}
-        onPress={() => {
-        if (item.id === 1) {
-        //boton de nueva lista vacia
-        const nuevaLista = {
-          id: Date.now().toString(),
-          titulo: 'Nueva lista',
-          productos: [],
-          fecha: new Date().toLocaleDateString('es-MX'),
-          miembro: 'Tú',
-        };
-        navigation.navigate('ListaDetalles', { lista: nuevaLista });
-        }
-        else if(item.id === 2){
-          navigation.navigate('HistorialScreen');
-        }
-      }}>
-    <Ionicons name={item.icon} size={24} color="white" />
-    <Text style={styles.opcionTexto}>{item.nombre}</Text>
-  </TouchableOpacity>
-))}
-
+        <TouchableOpacity style={styles.opcion} onPress={navNewList}>
+          <Ionicons name="clipboard-outline" size={24} color="white" />
+          <Text style={styles.opcionTexto}>Nueva lista de mandado</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.opcion} onPress={() => navigation.navigate('HistorialScreen', { user: {phone, family_id: familyId} })}>
+          <Ionicons name="calendar-outline" size={24} color="white" />
+          <Text style={styles.opcionTexto}>Ver compras anteriores</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.opcion} onPress={() => navigation.navigate('UnirteFamiliaScreen', { user: {phone, family_id: familyId} })}>
+          <Ionicons name="people-outline" size={24} color="white" />
+          <Text style={styles.opcionTexto}>Unirte a familia</Text>
+        </TouchableOpacity>
       </View>
 
-      {/*listas*/}
-      <Text style={styles.seccionTitulo}>Listas de mandado</Text>
+     {/* Listas activas */}
+      <Text style={styles.seccionTitulo}>Listas de Mandado</Text>
       <FlatList
-        data={listasDeMandado}
-        keyExtractor={(item) => item.id}
+        data={lists}
+        keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
-        <TouchableOpacity
-          style={styles.listaCard}
-          onPress={() => navigation.navigate('ListaDetalles', { lista: item })}>
-          <View>
-            <Text style={styles.listaTitulo}>{item.titulo}</Text>
-            <Text>{item.productos.length} productos</Text>
-          </View>
-          <View style={{ alignItems: 'flex-end' }}>
-            <Text>{item.fecha}</Text>
-            <Text>{item.miembro}</Text>
-            <Ionicons name="reorder-three-outline" size={20} color="gray" />
-          </View>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.listaCard}
+            onPress={() => navigation.navigate('ListaDetalles', { user: {phone, family_id: familyId} })}>
+            <View>
+              <Text style={styles.listaTitulo}>{item.title}</Text>
+              <Text>{item.products ? item.products.length: 0} productos</Text>
+            </View>
+            <View style={{ alignItems: 'flex-end' }}>
+              <Text>{item.creation_date && item.creation_date.slice(0, 10)}</Text>
+              <Text>{item.member}</Text>
+              <Ionicons name="reorder-three-outline" size={20} color="gray" />
+            </View>
+          </TouchableOpacity>
         )}
       />
     </View>

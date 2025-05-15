@@ -1,10 +1,12 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 from pydantic import BaseModel
+from datetime import datetime, timezone
 import os
 import uuid
+
 
 load_dotenv()   #variables de entorno
 app = FastAPI()     #incializa instancia FastAPI
@@ -32,6 +34,12 @@ class UserSigin(BaseModel):
     create_new: bool
     family_id: str = None #opcional
 
+class NewList(BaseModel):
+    family_id: str
+    phone: str
+    title: str
+    products: list = []
+
 ####################################################################################################################
 #login
 @app.post("/login")
@@ -39,10 +47,15 @@ async def login(user: UserLogin):
     user_found = await db.users.find_one({"phone": user.phone, "password": user.password})
 
     if user_found:
-        return JSONResponse(content={"message": "Login exitoso"}, status_code=200)
+        return JSONResponse(content={
+        "message": "Login exitoso",
+        "family_id": user_found["family_id"],
+        "phone": user_found["phone"],
+        "name": user_found["name"]
+        }, status_code=200)
     else:
         return JSONResponse(content={"detail": "Credenciales inválidas"}, status_code=401)
-    
+
 #signup
 @app.post("/signup")
 async def signup(user: UserSigin):
@@ -73,7 +86,35 @@ async def signup(user: UserSigin):
     #crear usuario
     await db.users.insert_one({"phone": user.phone, "name": user.name, "password": user.password, "family_id": family_id})
     return JSONResponse(content={"message": "Registro exitoso", "family_id": family_id}, status_code=201)
-    
+
+#new list
+@app.post("/lists")
+async def new_list(new_list: NewList):
+    result = await db.lists.insert_one({
+        "family_id": new_list.family_id,
+        "phone": new_list.phone,
+        "title": new_list.title,
+        "products": new_list.products,
+        "creation_date": datetime.now(timezone.utc).isoformat()
+    })
+    return JSONResponse(content={"message": "Lista creada", "list_id": str(result.inserted_id)}, status_code=201)
+
+#show lists
+@app.get("/lists")
+async def get_lists(family_id: str = Query(...)):
+    listas = []
+    #busca todas las listas de la familia
+    async for lista in db.lists.find({"family_id": family_id}):
+        lista["_id"] = str(lista["_id"])
+        #busca el nombre del usuario
+        user = await db.users.find_one({"phone": lista["phone"]})
+        if user:
+            lista["member"] = user["name"]
+        else:
+            lista["member"] = "Desconocido"
+            
+        listas.append(lista)
+    return {"lists": listas}
 
 
 # uvicorn main:app --reload --host 0.0.0.0

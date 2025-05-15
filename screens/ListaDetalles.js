@@ -2,90 +2,157 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import { sugerenciasAnteriores, resultadosBusqueda } from '../data/mockData';
 
+import { sugerenciasAnteriores, resultadosBusqueda } from '../data/mockData';   //mockdata
 
+const URL = "http://192.168.100.33:8000"; // Cambia si es necesario
 
-export default function ListaDetalle() {
+export default function ListaDetalles() {
   const route = useRoute();
   const navigation = useNavigation();
     
-  const lista = route.params?.lista ?? {
-    id: '0',
-    titulo: 'Lista sin nombre',
-    productos: [],
-    fecha: '',
-    miembro: '',
-  };
-    
+  //crear una lista nueva
+  const mode = route.params.mode || 'new';
+  const familyId = route.params.familyId;
+  const phone = route.params.phone;
   
-  const [nombreLista, setNombreLista] = useState(lista.titulo);
-  const [productos, setProductos] = useState(lista.productos || []);
-  
-  const agregarProducto = (nombre) => {
-    setProductos((prev) => [...prev, { id: Date.now(), nombre, cantidad: 1 }]);
+  //estados locales
+  const [listName, setListName] = useState('');
+  const [products, setProducts] = useState([]);
+  const [newProduct, setNewProduct] = useState('');
+
+  //manejo de productos
+  const addProducts = (name) => {
+    setProducts((prev) => [...prev, { id: Date.now(), name, quantity: 1 }]);
   };
 
-  const eliminarProducto = (id) => {
-    setProductos((prev) => prev.filter(p => p.id !== id));
+  const deleteProduct = (id) => {
+    setProducts((prev) => prev.filter(p => p.id !== id));
   };
-  
-  const cambiarCantidad = (id, delta) => {
-    setProductos((prev) =>
+
+  const changeQuantity = (id, delta) => {
+    setProducts((prev) =>
       prev.map(p =>
         p.id === id
-          ? { ...p, cantidad: Math.max(1, p.cantidad + delta) }
+          ? { ...p, quantity: Math.max(1, p.quantity + delta) }
           : p
       )
     );
   };
-  
+
+  //guardar lista
+  const localProducts = products.map(({name, quantity}) => ({name, quantity}));
+  const handleSaveList = async () => {
+    //validar nombre
+    if(!listName.trim()){
+      alert('El nombre de la lista no puede estar vacío');
+      return;
+    }
+    //validar productos
+    if(products.length === 0){
+      alert('La lista no puede estar vacía');
+      return;
+    }
+
+    try{
+      const URL_LISTS = URL + "/lists";
+      const response = await fetch(URL_LISTS, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          family_id: familyId,
+          phone,
+          title: listName,
+          products: localProducts,
+        }),
+      });
+      const data = await response.json();
+      if(response.ok){
+        alert('Lista guardada exitosamente');
+        navigation.navigate('HomeScreen', { user: { familyId, phone } });
+      }
+      else
+        alert(data.detail || 'Error al guardar la lista');
+    }catch(error){
+      console.log(error);
+      alert('No se pudo conectar al servidor');
+    }
+  }
+
 
   return (
     <ScrollView style={styles.container}>
       {/*encabezado*/}
       <View style={styles.header}>
-    <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
-      <Ionicons name="arrow-back" size={24} />
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.saveBtn}>
-      <Text style={{ color: '#fff' }}>Guardar lista</Text>
-    </TouchableOpacity>
-  </View>
-
-  <Text style={styles.label}>Nombre lista</Text>
-  <TextInput
-    style={styles.input}
-    value={nombreLista}
-    onChangeText={setNombreLista}
-    placeholder="Mi lista de compras"
-  />
-
-  <View style={styles.listaContainer}>
-    {productos.map((p) => (
-      <View key={p.id} style={styles.productoItem}>
-        <TouchableOpacity onPress={() => cambiarCantidad(p.id, -1)} style={styles.qtyBtn}><Text>-</Text></TouchableOpacity>
-        <Text style={styles.cantidad}>{p.cantidad}</Text>
-        <TouchableOpacity onPress={() => cambiarCantidad(p.id, 1)} style={styles.qtyBtn}><Text>+</Text></TouchableOpacity>
-        <Text style={styles.productoTexto}>{p.nombre}</Text>
-        <TouchableOpacity onPress={() => eliminarProducto(p.id)} style={styles.eliminarBtn}>
-          <Ionicons name="close" size={16} color="#000" />
+        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+          <Ionicons name="arrow-back" size={24} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.saveBtn} onPress={handleSaveList}>
+          <Text style={{ color: '#fff' }}>Guardar lista</Text>
         </TouchableOpacity>
       </View>
-    ))}
-  </View>
 
-      {/*sugerencias*/}
+      {/* Nombre de la lista */}
+      <Text style={styles.label}>Nombre lista</Text>
+      <TextInput
+        style={styles.input}
+        value={listName}
+        onChangeText={setListName}
+        placeholder="Mi lista de compras"
+      />
+
+      {/* Agregar producto */}
+      <Text style={styles.label}>Agregar producto</Text>
+      <View style={{ flexDirection: 'row', marginBottom: 10 }}>
+        <TextInput
+          style={[styles.input, { flex: 1, marginBottom: 0 }]}
+          placeholder="Nombre del producto"
+          value={newProduct}
+          onChangeText={setNewProduct}
+        />
+        <TouchableOpacity
+          style={[styles.saveBtn, { marginLeft: 8 }]}
+          onPress={() => {
+            if (newProduct.trim()) {
+              addProducts(newProduct.trim());
+              setNewProduct('');
+            }
+          }}
+        >
+          <Text style={{ color: '#fff' }}>Agregar</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Productos agregados */}
+      <View style={styles.listaContainer}>
+        {products.map((p) => (
+        <View key={p.id} style={styles.productoItem}>
+          <TouchableOpacity onPress={() => changeQuantity(p.id, -1)} style={styles.qtyBtn}><Text>-</Text></TouchableOpacity>
+          <Text style={styles.cantidad}>{p.quantity}</Text>
+          <TouchableOpacity onPress={() => changeQuantity(p.id, 1)} style={styles.qtyBtn}><Text>+</Text></TouchableOpacity>
+          <Text style={styles.productoTexto}>{p.name}</Text>
+          <TouchableOpacity onPress={() => deleteProduct(p.id)} style={styles.eliminarBtn}>
+            <Ionicons name="close" size={16} color="#000" />
+          </TouchableOpacity>
+        </View>
+      ))}
+      </View>
+
+
+      {/* ELEMENTOS NO FUNCIONALES */}
+      {/* Sugerencias */}
       <Text style={styles.subtitulo}>Sugerencias de compras anteriores</Text>
       <View style={styles.chipsContainer}>
         {sugerenciasAnteriores.map((s, i) => (
-          <TouchableOpacity key={i} style={styles.chip} onPress={() => agregarProducto(s)}>
+          <TouchableOpacity key={i} style={styles.chip} onPress={() => addProducts(s)}>
             <Text>+ {s}</Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      {/*buscador (solo interfaz)*/}
+      {/*buscador*/}
       <Text style={styles.subtitulo}>Buscar ingredientes de recetas</Text>
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="gray" />
@@ -102,6 +169,7 @@ export default function ListaDetalle() {
         ))}
       </View>
 
+      {/*boton para iniciar compra*/}
       <View>
         <TouchableOpacity
           style={styles.iniciarCompraBtn}
