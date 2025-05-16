@@ -1,15 +1,14 @@
 import React from 'react';
 import{ useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-const URL = "http://10.96.13.59:8000"; //cambiar segun necesario
+const URL = "http://10.96.13.103:8000"; //cambiar segun necesario
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
 
-  const route = useRoute();
   const navigation = useNavigation();
 
   const handleLogin = async () => {
@@ -21,23 +20,26 @@ export default function LoginScreen() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email,
+          phone,
           password,
         }),
       });
       const data = await response.json();
       console.log("Respuesta API: ", data);
       
-      if(response.ok)
-        Alert.alert('Login exitoso');
+      if(response.ok){
+        //alert('Login exitoso');
+        navigation.navigate('HomeScreen', { user:{ family_id: data.family_id, phone: data.phone, name: data.name } });   //se pasa la info a HomeScreen
+      }
       else
-        Alert.alert(data.detail || 'Error al iniciar sesión');
+        alert(data.detail || 'Error al iniciar sesión');
 
     }catch(error){
       console.log(error);
       console.log('No se pudo conectar al servidor');
     }
   }
+
 
   return (
     <View style={styles.container}>
@@ -46,31 +48,31 @@ export default function LoginScreen() {
       </View>
       <View style={styles.formContainer}>
 
-        <Text style={styles.title}>Log in</Text>
+        <Text style={styles.title}>Inicia Sesión</Text>
         <TextInput 
-        placeholder="Email Address"
+        placeholder="Número de teléfono"
         style={styles.input}
-        value={email}
-        onChangeText={setEmail} 
+        value={phone}
+        onChangeText={setPhone} 
         />
         <TextInput 
-        placeholder="Password" 
+        placeholder="Contraseña" 
         //secureTextEntry 
         style={styles.input}
         value={password}
         onChangeText={setPassword}
         />
 
-        <Text style={styles.forgot}>Forgot Password?</Text>
+        {/*<Text style={styles.forgot}>¿Olvidaste tu contraseña?</Text>*/}
 
         <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginText}>Log in</Text>
+          <Text style={styles.loginText}>Iniciar sesión</Text>
         </TouchableOpacity>
 
 
-        <Text style={styles.orText}>or</Text>
+        <Text style={styles.orText}>o</Text>
         <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-        <Text style={styles.signupText}>Don’t have an account? <Text style={styles.signupText}>Sign up</Text></Text>
+        <Text style={styles.signupText}>¿No tienes una cuenta? <Text style={styles.signupText}>Regístrate</Text></Text>
         </TouchableOpacity>
       </View>
     </View>
