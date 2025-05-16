@@ -80,7 +80,7 @@ export default function HomeScreen( { route }) {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.listaCard}
-            onPress={() => navigation.navigate('ListaDetalles', { user: {phone, family_id: familyId} })}>
+            onPress={() => navigation.navigate('ListaDetalles', {  mode: 'edit', list: item, familyId: familyId, phone: phone })}>
             <View>
               <Text style={styles.listaTitulo}>{item.title}</Text>
               <Text>{item.products ? item.products.length: 0} productos</Text>

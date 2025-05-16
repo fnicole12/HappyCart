@@ -4,6 +4,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from datetime import datetime, timezone
+from bson import ObjectId
 import os
 import uuid
 
@@ -105,8 +106,8 @@ async def get_lists(family_id: str = Query(...)):
     listas = []
     #busca todas las listas de la familia
     async for lista in db.lists.find({"family_id": family_id}):
-        lista["_id"] = str(lista["_id"])
-        #busca el nombre del usuario
+        lista["_id"] = str(lista["_id"])        #convierte el ObjectId a string
+        #busca el usuario que creo la lista
         user = await db.users.find_one({"phone": lista["phone"]})
         if user:
             lista["member"] = user["name"]
@@ -115,6 +116,18 @@ async def get_lists(family_id: str = Query(...)):
             
         listas.append(lista)
     return {"lists": listas}
+
+#update list
+@app.put("/lists/{list_id}")
+async def update_list(list_id: str, updated: dict):
+    result = await db.lists.update_one(
+        {"_id": ObjectId(list_id)},     #de string a ObjectId   
+        {"$set": updated}       #solo actualiza los campos que se envian
+    )
+    if result.modified_count:
+        return {"message": "Lista actualizada"}
+    else:
+        return JSONResponse(content={"detail": "List no encontrada"}, status_code=404)
 
 
 # uvicorn main:app --reload --host 0.0.0.0

@@ -11,25 +11,36 @@ export default function ListaDetalles() {
   const route = useRoute();
   const navigation = useNavigation();
     
-  //crear una lista nueva
-  const mode = route.params.mode || 'new';
+  const mode = route.params.mode || 'new';  // 'new' o 'edit'
   const familyId = route.params.familyId;
   const phone = route.params.phone;
+  const list = route.params?.list || null; //para editar una lista existente
   
   //estados locales
-  const [listName, setListName] = useState('');
-  const [products, setProducts] = useState([]);
+  const [title, setTitle] = useState(list ? list.title : '');
   const [newProduct, setNewProduct] = useState('');
+  //inicializa productos con ids aleatorios
+  const [products, setProducts] = useState(() => {
+    if (list && list.products) {
+      return list.products.map((p, i) => ({
+        ...p,
+        id: p.id || `${i}-${Date.now()}-${Math.random()}`
+      }));
+    }
+    return [];
+  });
 
-  //manejo de productos
+
+  //manejo de productos, id generado aleatoriamente
   const addProducts = (name) => {
-    setProducts((prev) => [...prev, { id: Date.now(), name, quantity: 1 }]);
+    setProducts((prev) => [
+      ...prev,
+      { id: `${Date.now()}-${Math.random()}`, name, quantity: 1 }
+    ]);
   };
-
   const deleteProduct = (id) => {
     setProducts((prev) => prev.filter(p => p.id !== id));
   };
-
   const changeQuantity = (id, delta) => {
     setProducts((prev) =>
       prev.map(p =>
@@ -44,7 +55,7 @@ export default function ListaDetalles() {
   const localProducts = products.map(({name, quantity}) => ({name, quantity}));
   const handleSaveList = async () => {
     //validar nombre
-    if(!listName.trim()){
+    if(!title.trim()){
       alert('El nombre de la lista no puede estar vacío');
       return;
     }
@@ -54,9 +65,31 @@ export default function ListaDetalles() {
       return;
     }
 
-    try{
+    const listData = {
+    title: title,
+    products: products.map(({ name, quantity }) => ({ name, quantity })),
+    family_id: familyId,
+    phone,
+    };
+
+    try{  //editar lista
+      let response, data;
       const URL_LISTS = URL + "/lists";
-      const response = await fetch(URL_LISTS, {
+      if(mode === 'edit' && list && list._id){    //verifica que la lista y su id existen
+        response = await fetch(URL_LISTS + '/' + list._id, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title: title,
+            products: products.map(({name, quantity}) => ({name, quantity})),
+          }),
+        })
+        data = await response.json();
+      }
+      else{ //crear nueva lista
+        response = await fetch(URL_LISTS, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -64,14 +97,17 @@ export default function ListaDetalles() {
         body: JSON.stringify({
           family_id: familyId,
           phone,
-          title: listName,
+          title: title,
           products: localProducts,
         }),
-      });
-      const data = await response.json();
+        });
+        data = await response.json();
+      }
+      
+
       if(response.ok){
-        alert('Lista guardada exitosamente');
-        navigation.navigate('HomeScreen', { user: { familyId, phone } });
+        alert('Lista guardada :)');
+        navigation.navigate('HomeScreen', { user: { family_id: familyId, phone } });
       }
       else
         alert(data.detail || 'Error al guardar la lista');
@@ -98,8 +134,8 @@ export default function ListaDetalles() {
       <Text style={styles.label}>Nombre lista</Text>
       <TextInput
         style={styles.input}
-        value={listName}
-        onChangeText={setListName}
+        value={title}
+        onChangeText={setTitle}
         placeholder="Mi lista de compras"
       />
 
