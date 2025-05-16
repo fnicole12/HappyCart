@@ -36,6 +36,9 @@ MongoAPI/.env
 
 # python cache
 MongoAPI/__pycache__
+app/__pycache__
+ingredientes_buscar/ingredientes_buscar/__pycache__
+ingredientes_buscar/ingredientes_buscar/spiders/__pycache__
 
 # typescript
 *.tsbuildinfo
