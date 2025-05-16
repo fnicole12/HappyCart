@@ -123,7 +123,7 @@ export default function SignUpScreen() {
         <View >	
             <TouchableOpacity
               style={styles.familyButton}
-              onPress={() => setCreateNew(false)}
+              onPress={() => setCreateNew(!createNew) }
             >
               <Text>Unirse a familia</Text>
             </TouchableOpacity>
