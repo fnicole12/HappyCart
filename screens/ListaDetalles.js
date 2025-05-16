@@ -5,7 +5,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 
 import { sugerenciasAnteriores, resultadosBusqueda } from '../data/mockData';   //mockdata
 
-const URL = "http://192.168.100.33:8000"; // Cambia si es necesario
+const URL = "http://192.168.100.33:8000";     //cambiar segun necesario
 
 export default function ListaDetalles() {
   const route = useRoute();
@@ -31,7 +31,7 @@ export default function ListaDetalles() {
   });
 
 
-  //manejo de productos, id generado aleatoriamente
+  //manejo de productos, ids aleatorios
   const addProducts = (name) => {
     setProducts((prev) => [
       ...prev,

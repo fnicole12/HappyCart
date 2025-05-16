@@ -3,7 +3,7 @@ import{ useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-const URL = "http://192.168.100.33:8000"; //cambiar segun necesario
+const URL = "http://192.168.100.33:8000";     //cambiar segun necesario
 
 export default function LoginScreen() {
   const [phone, setPhone] = useState('');
