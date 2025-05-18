@@ -12,10 +12,10 @@ export default function HomeScreen( { route }) {
   const [phone, setPhone] = useState('');
   const [lists, setLists] = useState([]);
 
-  //al montar el componente lee los parametros de navegación
+  //carga los datos del usuario
   useEffect(() => {
     if (route.params && route.params.user) {
-      setFamilyId(route.params.user.family_id);
+      setFamilyId(route.params.user.familyId);
       setPhone(route.params.user.phone);
     }
   }, [route.params]);
@@ -62,11 +62,11 @@ export default function HomeScreen( { route }) {
           <Ionicons name="clipboard-outline" size={24} color="white" />
           <Text style={styles.opcionTexto}>Nueva lista de mandado</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.opcion} onPress={() => navigation.navigate('HistorialScreen', { user: {phone, family_id: familyId} })}>
+        <TouchableOpacity style={styles.opcion} onPress={() => navigation.navigate('HistorialScreen')}>
           <Ionicons name="calendar-outline" size={24} color="white" />
           <Text style={styles.opcionTexto}>Ver compras anteriores</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.opcion} onPress={() => navigation.navigate('UnirteFamiliaScreen', { user: {phone, family_id: familyId} })}>
+        <TouchableOpacity style={styles.opcion} onPress={() => navigation.navigate('UnirteFamiliaScreen')}>
           <Ionicons name="people-outline" size={24} color="white" />
           <Text style={styles.opcionTexto}>Unirte a familia</Text>
         </TouchableOpacity>

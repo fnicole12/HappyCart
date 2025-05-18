@@ -29,7 +29,7 @@ export default function LoginScreen() {
       
       if(response.ok){
         //alert('Login exitoso');
-        navigation.navigate('HomeScreen', { user:{ family_id: data.family_id, phone: data.phone, name: data.name } });   //se pasa la info a HomeScreen
+        navigation.navigate('HomeScreen', { user:{ familyId: data.family_id, phone: data.phone, name: data.name } });   //se pasa la info a HomeScreen
       }
       else
         alert(data.detail || 'Error al iniciar sesión');

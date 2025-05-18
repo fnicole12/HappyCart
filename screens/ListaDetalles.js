@@ -51,6 +51,7 @@ export default function ListaDetalles() {
     );
   };
 
+
   //guardar lista
   const localProducts = products.map(({name, quantity}) => ({name, quantity}));
   const handleSaveList = async () => {
@@ -64,13 +65,6 @@ export default function ListaDetalles() {
       alert('La lista no puede estar vacía');
       return;
     }
-
-    const listData = {
-    title: title,
-    products: products.map(({ name, quantity }) => ({ name, quantity })),
-    family_id: familyId,
-    phone,
-    };
 
     try{  //editar lista
       let response, data;
@@ -107,7 +101,7 @@ export default function ListaDetalles() {
 
       if(response.ok){
         alert('Lista guardada :)');
-        navigation.navigate('HomeScreen', { user: { family_id: familyId, phone } });
+        navigation.navigate('HomeScreen', { user: { familyId: familyId, phone } });
       }
       else
         alert(data.detail || 'Error al guardar la lista');
@@ -122,7 +116,7 @@ export default function ListaDetalles() {
     <ScrollView style={styles.container}>
       {/*encabezado*/}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen', { user: { familyId: familyId, phone } })}>
           <Ionicons name="arrow-back" size={24} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.saveBtn} onPress={handleSaveList}>
@@ -205,15 +199,15 @@ export default function ListaDetalles() {
         ))}
       </View>
 
+
       {/*boton para iniciar compra*/}
-      <View>
-        <TouchableOpacity
-          style={styles.iniciarCompraBtn}
-          onPress={() => navigation.navigate('Compra', { listaId: lista.id })}> 
-          {/*pasamos el id a la pantalla compra screen*/}
-          <Text style={{ color: 'white', fontWeight: 'bold' }}>Iniciar compra</Text>
-        </TouchableOpacity>
-      </View>
+      {mode === 'edit' && (
+        <View>
+          <TouchableOpacity style={styles.iniciarCompraBtn} onPress={() => navigation.navigate('Compra')}> 
+            <Text style={{ color: 'white', fontWeight: 'bold' }}>Iniciar compra</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </ScrollView>
   );
 }

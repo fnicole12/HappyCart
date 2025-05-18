@@ -127,7 +127,7 @@ async def update_list(list_id: str, updated: dict):
     if result.modified_count:
         return {"message": "Lista actualizada"}
     else:
-        return JSONResponse(content={"detail": "List no encontrada"}, status_code=404)
+        return JSONResponse(content={"detail": "Lista no encontrada"}, status_code=404)
 
 
 # uvicorn main:app --reload --host 0.0.0.0
