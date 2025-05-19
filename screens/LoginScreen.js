@@ -3,7 +3,7 @@ import{ useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-const URL = "http://10.96.13.103:8000"; //cambiar segun necesario
+const URL = "http://192.168.1.91:8000"; //cambiar segun necesario
 
 export default function LoginScreen() {
   const [phone, setPhone] = useState('');
@@ -29,6 +29,7 @@ export default function LoginScreen() {
       
       if(response.ok){
         //alert('Login exitoso');
+        console.log(data);
         navigation.navigate('HomeScreen', { user:{ family_id: data.family_id, phone: data.phone, name: data.name } });   //se pasa la info a HomeScreen
       }
       else

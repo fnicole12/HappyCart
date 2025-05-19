@@ -5,7 +5,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 
 import { sugerenciasAnteriores, resultadosBusqueda } from '../data/mockData';   //mockdata
 
-const URL = "http://192.168.100.33:8000"; // Cambia si es necesario
+const URL = "http://192.168.1.91:8000"; // Cambia si es necesario
 
 export default function ListaDetalles() {
   const route = useRoute();

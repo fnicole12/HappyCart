@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'reac
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const URL = "http://192.168.100.33:8000";   //cambiar segun necesario
+const URL = "http://192.168.1.91:8000";   //cambiar segun necesario
 
 export default function SignUpScreen() {
   const [name, setName] = useState('');

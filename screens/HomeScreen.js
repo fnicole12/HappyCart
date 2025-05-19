@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Image, FlatList } from 'react
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
-const URL = "http://192.168.100.33:8000"; //cambiar segun necesario
+const URL = "http://192.168.1.91:8000"; //cambiar segun necesario
 
 export default function HomeScreen( { route }) {
   const navigation = useNavigation();
@@ -24,6 +24,7 @@ export default function HomeScreen( { route }) {
   useFocusEffect(
     useCallback(() => {
       if (familyId) {
+        console.log(familyId);
         const URL_UPDATED = URL + "/lists?family_id=" + familyId;
         fetch(URL_UPDATED)    //http get request
           .then(res => res.json())
