@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Image, FlatList } from 'react
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
-const URL = "http://192.168.1.91:8000"; //cambiar segun necesario
+const URL = "http://192.168.100.33:8000";     //cambiar segun necesario
 
 export default function HomeScreen( { route }) {
   const navigation = useNavigation();
@@ -12,10 +12,10 @@ export default function HomeScreen( { route }) {
   const [phone, setPhone] = useState('');
   const [lists, setLists] = useState([]);
 
-  //al montar el componente lee los parametros de navegación
+  //carga los datos del usuario
   useEffect(() => {
     if (route.params && route.params.user) {
-      setFamilyId(route.params.user.family_id);
+      setFamilyId(route.params.user.familyId);
       setPhone(route.params.user.phone);
     }
   }, [route.params]);
@@ -63,11 +63,11 @@ export default function HomeScreen( { route }) {
           <Ionicons name="clipboard-outline" size={24} color="white" />
           <Text style={styles.opcionTexto}>Nueva lista de mandado</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.opcion} onPress={() => navigation.navigate('HistorialScreen', { user: {phone, family_id: familyId} })}>
+        <TouchableOpacity style={styles.opcion} onPress={() => navigation.navigate('HistorialScreen')}>
           <Ionicons name="calendar-outline" size={24} color="white" />
           <Text style={styles.opcionTexto}>Ver compras anteriores</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.opcion} onPress={() => navigation.navigate('UnirteFamiliaScreen', { user: {phone, family_id: familyId} })}>
+        <TouchableOpacity style={styles.opcion} onPress={() => navigation.navigate('UnirteFamiliaScreen')}>
           <Ionicons name="people-outline" size={24} color="white" />
           <Text style={styles.opcionTexto}>Unirte a familia</Text>
         </TouchableOpacity>
@@ -81,7 +81,7 @@ export default function HomeScreen( { route }) {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.listaCard}
-            onPress={() => navigation.navigate('ListaDetalles', { user: {phone, family_id: familyId} })}>
+            onPress={() => navigation.navigate('ListaDetalles', {  mode: 'edit', list: item, familyId: familyId, phone: phone })}>
             <View>
               <Text style={styles.listaTitulo}>{item.title}</Text>
               <Text>{item.products ? item.products.length: 0} productos</Text>
