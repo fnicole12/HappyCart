@@ -1,54 +1,103 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
+const URL = "http://192.168.1.91:8000";   //cambiar segun necesario
 
 export default function SignUpScreen() {
-  const [nombre, setNombre] = useState('');
-  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [createNew, setCreateNew] = useState(true);
+  const [familyId, setFamilyId] = useState('');
   
-  const route = useRoute();
   const navigation = useNavigation();
 
-  const handleSignUp = () => {
-    console.log('Registrando usuario:', { nombre, email, password, confirmPassword });
+  const handleSignUp = async () => {
+    //validar contraseña
+    if(password !== confirmPassword) {
+      alert('Las contraseñas no coinciden');
+      return;
+    }
+    //validar familia
+    if(!createNew && !familyId) {
+      alert('Por favor ingrese el ID de la familia');
+      return;
+    }
+
+    try{
+      const URL_LOGIN = URL + "/signup";
+      const response = await fetch(URL_LOGIN, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          phone,
+          password,
+          create_new: createNew,
+          family_id: familyId,
+        }),
+      });
+      const data = await response.json();
+      console.log("Respuesta API: ", data);
+
+      if(response.ok){
+        alert('Registro exitoso');
+        navigation.navigate('Login');
+      }
+      else
+        alert(data.detail || 'Error al registrarse');
+
+    }catch(error){
+      console.log(error);
+      alert('Error al registrarse');
+    }
   };
+
 
   return (
     <View style={styles.container}>
-    <View style={styles.header} />
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} />
+        </TouchableOpacity>
+        <Image source={require('../assets/logo.png')} style={styles.logo} />
+      </View>
 
     <View style={styles.content}>
-        <Image source={require('../assets/logo.png')} style={styles.logo} />
-
         <View style={styles.formContainer}>
-        <Text style={styles.title}>Sign up</Text>
+        <Text style={styles.title}>Regístrate</Text>
+        <Text style={{ color: '#fff', marginBottom: 10 }}>Si no te unes a una familia existente se creará una propia.</Text>
 
+        {/*Nombre*/}
         <TextInput
             style={styles.input}
             placeholder="Nombre"
             placeholderTextColor="#ccc"
-            value={nombre}
-            onChangeText={setNombre}
+            value={name}
+            onChangeText={setName}
         />
 
+        {/*Telefono*/}
         <TextInput
             style={styles.input}
-            placeholder="Email Address"
+            placeholder="Teléfono"
             placeholderTextColor="#ccc"
-            value={email}
-            onChangeText={setEmail}
+            value={phone}
+            onChangeText={setPhone}
         />
 
+        {/*Contraseña*/}
         <View style={styles.passwordContainer}>
             <TextInput
             style={styles.inputPassword}
-            placeholder="Password"
+            placeholder="Contraseña"
             placeholderTextColor="#ccc"
             secureTextEntry={!showPassword}
             value={password}
@@ -62,7 +111,7 @@ export default function SignUpScreen() {
         <View style={styles.passwordContainer}>
             <TextInput
             style={styles.inputPassword}
-            placeholder="Confirm password"
+            placeholder="Confirmar Contraseña"
             placeholderTextColor="#ccc"
             secureTextEntry={!showConfirmPassword}
             value={confirmPassword}
@@ -73,8 +122,29 @@ export default function SignUpScreen() {
             </TouchableOpacity>
         </View>
 
+        {/*Familia*/}
+        <View >	
+            <TouchableOpacity
+              style={styles.familyButton}
+              onPress={() => setCreateNew(!createNew) }
+            >
+              <Text>Unirse a familia</Text>
+            </TouchableOpacity>
+          </View>
+
+        {!createNew && (
+          <TextInput
+            style={styles.input}
+            placeholder="Código de familia"
+            placeholderTextColor="#ccc"
+            value={familyId}
+            onChangeText={setFamilyId}
+          />
+        )}
+
+
         <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
-            <Text style={styles.signUpText}>Sign up</Text>
+            <Text style={styles.signUpText}>Confirmar</Text>
         </TouchableOpacity>
         </View>
     </View>
@@ -88,13 +158,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    },
+  },
   header: {
-    height: 60,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
     backgroundColor: '#f5ac70',
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    },
+    paddingTop: 20,
+    paddingLeft: 30,
+    paddingBottom: 20,
+    paddingRight: 30,
+    //borderBottomLeftRadius: 20,
+    //borderBottomRightRadius: 20,
+  },
+  logo: {
+    width: 50,
+    height: 50,
+    //resizeMode: 'contain',
+  },
   content: {
     flex: 1,
     justifyContent: 'center',
@@ -102,24 +184,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     },
   footer: {
-    height: 60,
+    height: 100,
     backgroundColor: '#f5ac70',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    //borderTopLeftRadius: 20,
+    //borderTopRightRadius: 20,
     },
-  logo: {
-    width: 80,
-    height: 80,
-    alignSelf: 'center',
-    marginVertical: 20,
-    marginTop: -30,
-  },
   formContainer: {
     backgroundColor: '#333',
     borderRadius: 20,
     padding: 20,
     width: '90%',
-    height: '50%',
+    //height: '50%',
   },
   title: {
     color: '#fff',
@@ -152,6 +227,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     marginTop: 10,
+  },
+  familyButton: {
+    backgroundColor: '#ccc',
+    padding: 12,
+    alignItems: 'center',
+    borderRadius: 6,
   },
   signUpText: {
     color: '#333',
