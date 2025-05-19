@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, FlatList, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
-const URL = "http://192.168.100.33:8000";     //cambiar segun necesario
+const URL = "http://192.168.1.91:8000";     //cambiar segun necesario
 
 export default function HomeScreen( { route }) {
   const navigation = useNavigation();
@@ -11,6 +11,9 @@ export default function HomeScreen( { route }) {
   const [familyId, setFamilyId] = useState('');
   const [phone, setPhone] = useState('');
   const [lists, setLists] = useState([]);
+  const [mostrarCodigo, setMostrarCodigo] = useState(false);
+  const [codigoFamilia, setCodigoFamilia] = useState('');
+
 
   //carga los datos del usuario
   useEffect(() => {
@@ -59,18 +62,37 @@ export default function HomeScreen( { route }) {
 
       {/* Opciones */}
       <View style={styles.opcionesContainer}>
-        <TouchableOpacity style={styles.opcion} onPress={navNewList}>
-          <Ionicons name="clipboard-outline" size={24} color="white" />
-          <Text style={styles.opcionTexto}>Nueva lista de mandado</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.opcion} onPress={() => navigation.navigate('HistorialScreen')}>
-          <Ionicons name="calendar-outline" size={24} color="white" />
-          <Text style={styles.opcionTexto}>Ver compras anteriores</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.opcion} onPress={() => navigation.navigate('UnirteFamiliaScreen')}>
-          <Ionicons name="people-outline" size={24} color="white" />
-          <Text style={styles.opcionTexto}>Unirte a familia</Text>
-        </TouchableOpacity>
+        <View style={styles.filaOpciones}>
+          <TouchableOpacity style={styles.opcion} onPress={navNewList}>
+            <Ionicons name="clipboard-outline" size={24} color="white" />
+            <Text style={styles.opcionTexto}>Nueva lista de mandado</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.opcion} onPress={() => navigation.navigate('HistorialScreen')}>
+            <Ionicons name="calendar-outline" size={24} color="white" />
+            <Text style={styles.opcionTexto}>Ver compras anteriores</Text>
+          </TouchableOpacity>
+        </View>
+        
+        <View style={styles.filaUnir}>
+          <TouchableOpacity style={styles.opcion} onPress={() => setMostrarCodigo(!mostrarCodigo)}>
+            <Ionicons name="people-outline" size={24} color="white" />
+            <Text style={styles.opcionTexto}>Unirte a familia</Text>
+          </TouchableOpacity>
+
+          {mostrarCodigo && (
+            <View style={styles.codigoGroup}>
+              <TextInput
+                style={styles.codigoInput}
+                placeholder="Código"
+                value={codigoFamilia}
+                onChangeText={setCodigoFamilia}
+              />
+              <TouchableOpacity style={styles.confirmarBtn} onPress={() => console.log('Código:', codigoFamilia)}>
+                <Text style={styles.confirmarTexto}>Confirmar</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
       </View>
 
      {/* Listas activas */}
@@ -122,8 +144,9 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   opcionesContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    //flexDirection: 'row',
+    //justifyContent: 'space-around',
+    alignItems: 'center', // centrado vertical
     marginBottom: 20,
   },
   opcion: {
@@ -134,6 +157,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     justifyContent: 'center',
+    marginHorizontal: 15,
   },
   opcionTexto: {
     fontSize: 10,
@@ -156,5 +180,51 @@ const styles = StyleSheet.create({
   },
   listaTitulo: {
     fontWeight: 'bold',
+  },
+  codigoContainer: {
+    marginVertical: 10,
+    alignItems: 'center',
+  },
+  label: {
+    marginBottom: 6,
+    fontWeight: 'bold',
+  },
+  codigoInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    width: 100,
+    marginRight: 8,
+  },
+  confirmarBtn: {
+    backgroundColor: '#75C42B',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+  },
+  confirmarTexto: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  filaOpciones: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: '100%',
+    marginBottom: 10,
+  },
+  codigoGroup: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 10, //codigo y confirmar demasiado juntos
+  },
+  filaUnir: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    //alignItems: 'center',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    marginTop: 10,
   },
 });

@@ -63,11 +63,14 @@ export default function SignUpScreen() {
 
   return (
     <View style={styles.container}>
-    <View style={styles.header} />
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} />
+        </TouchableOpacity>
+        <Image source={require('../assets/logo.png')} style={styles.logo} />
+      </View>
 
     <View style={styles.content}>
-        <Image source={require('../assets/logo.png')} style={styles.logo} />
-
         <View style={styles.formContainer}>
         <Text style={styles.title}>Regístrate</Text>
         <Text style={{ color: '#fff', marginBottom: 10 }}>Si no te unes a una familia existente se creará una propia.</Text>
@@ -155,13 +158,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    },
+  },
   header: {
-    height: 60,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
     backgroundColor: '#f5ac70',
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    },
+    paddingTop: 20,
+    paddingLeft: 30,
+    paddingBottom: 20,
+    paddingRight: 30,
+    //borderBottomLeftRadius: 20,
+    //borderBottomRightRadius: 20,
+  },
+  logo: {
+    width: 50,
+    height: 50,
+    //resizeMode: 'contain',
+  },
   content: {
     flex: 1,
     justifyContent: 'center',
@@ -169,24 +184,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     },
   footer: {
-    height: 60,
+    height: 100,
     backgroundColor: '#f5ac70',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    //borderTopLeftRadius: 20,
+    //borderTopRightRadius: 20,
     },
-  logo: {
-    width: 80,
-    height: 80,
-    alignSelf: 'center',
-    marginVertical: 20,
-    marginTop: -30,
-  },
   formContainer: {
     backgroundColor: '#333',
     borderRadius: 20,
     padding: 20,
     width: '90%',
-    height: '50%',
+    //height: '50%',
   },
   title: {
     color: '#fff',

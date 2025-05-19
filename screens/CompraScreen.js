@@ -19,7 +19,7 @@ export default function CompraScreen() {
   const titulo = lista?.titulo ?? 'Mandado';
     
 
-  const [supermercado, setSupermercado] = useState('Supermercado A');
+  const [supermercado, setSupermercado] = useState('');
 
   const actualizarPrecio = (id, valor) => {
     setProductos(prev =>
@@ -48,18 +48,21 @@ export default function CompraScreen() {
     <View style={styles.container}>
       {/*flecha regresar*/}
       <TouchableOpacity onPress={() => navigation.goBack()}>
-      <Ionicons name="arrow-back" size={24} />
-    </TouchableOpacity>
-
-      {/*selector supermercado */}
-      <TouchableOpacity style={styles.superBtn}>
-        <Text style={styles.superText}>▼ {supermercado}</Text>
+        <Ionicons name="arrow-back" size={24} />
       </TouchableOpacity>
 
+      {/*selector supermercado */}
+      <TextInput
+        style={styles.superInput}
+        placeholder="Nombre del supermercado"
+        value={supermercado}
+        onChangeText={setSupermercado}
+      />
+      
       <Text style={styles.titulo}>Mandado</Text>
 
       {/*tabla */}
-      <ScrollView style={styles.tabla}>
+      <View style={styles.tabla}>
         <View style={styles.tablaHeader}>
           <Text style={styles.col}>✓</Text>
           <Text style={styles.col}>Cantidad</Text>
@@ -67,35 +70,36 @@ export default function CompraScreen() {
           <Text style={styles.col}>Precio</Text>
         </View>
 
-        {productos.map((p) => (
-          <View key={p.id} style={styles.fila}>
-            <TouchableOpacity onPress={() => toggleCompra(p.id)}>
+        {/*scroll para limitar prod*/}
+        <ScrollView style={styles.scrollProductos}>
+          {productos.map((p) => (
+            <View key={p.id} style={styles.fila}>
+              <TouchableOpacity onPress={() => toggleCompra(p.id)}>
                 <Ionicons
-                name={p.comprado ? 'checkbox' : 'square-outline'}
-                size={24}
-                color={p.comprado ? '#f5ac70' : '#ccc'}
+                  name={p.comprado ? 'checkbox' : 'square-outline'}
+                  size={24}
+                  color={p.comprado ? '#f5ac70' : '#ccc'}
                 />
-            </TouchableOpacity>
+              </TouchableOpacity>
+              <Text style={styles.col}>{p.cantidad}</Text>
+              <Text style={styles.col}>{p.nombre}</Text>
+              <TextInput
+                style={styles.precioInput}
+                placeholder="$"
+                keyboardType="numeric"
+                value={p.precio}
+                onChangeText={(v) => actualizarPrecio(p.id, v)}
+              />
+            </View>
+          ))}
+        </ScrollView>
 
-
-            <Text style={styles.col}>{p.cantidad}</Text>
-            <Text style={styles.col}>{p.nombre}</Text>
-            <TextInput
-              style={[styles.precioInput]}
-              placeholder="$"
-              keyboardType="numeric"
-              value={p.precio}
-              onChangeText={(v) => actualizarPrecio(p.id, v)}
-            />
-          </View>
-        ))}
-
-        {/*TOTAL*/}
         <View style={styles.totalRow}>
           <Text style={{ fontWeight: 'bold' }}>TOTAL</Text>
           <Text style={{ marginLeft: 'auto' }}>${calcularTotal()}</Text>
         </View>
-      </ScrollView>
+      </View>
+
 
       <TouchableOpacity style={styles.finalizarBtn}>
         <Text style={styles.finalizarText}>Finalizar compra</Text>
@@ -114,15 +118,18 @@ const styles = StyleSheet.create({
     backBtn: {
       marginBottom: 10,
     },
-    superBtn: {
-      backgroundColor: '#D6F1C6',
-      padding: 10,
-      borderRadius: 20,
-      alignSelf: 'flex-end',
-    },
-    superText: {
+    superInput: {
+      borderBottomWidth: 1,
+      borderColor: '#ccc',
+      paddingVertical: 6,
+      paddingHorizontal: 4,
       fontWeight: 'bold',
+      alignSelf: 'flex-end',
+      minWidth: 160,
+      marginBottom: 10,
+      textAlign: 'right',
     },
+
     titulo: {
       fontSize: 18,
       fontWeight: 'bold',
@@ -176,5 +183,9 @@ const styles = StyleSheet.create({
       color: '#fff',
       fontWeight: 'bold',
     },
+    scrollProductos: {
+      maxHeight: 600, //controlar num prod en pantalla
+    },
+
   });
   

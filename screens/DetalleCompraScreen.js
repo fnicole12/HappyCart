@@ -34,26 +34,28 @@ export default function DetalleCompraScreen() {
       </View>
 
       {/*parte de arriba de la tabla*/}
-      <ScrollView style={styles.tabla}>
+      <View style={styles.tabla}>
         <View style={styles.tablaHeader}>
           <Text style={styles.col}>Cantidad</Text>
           <Text style={styles.col}>Producto</Text>
           <Text style={styles.col}>Precio</Text>
         </View>
 
-        {compra.productos.map((p) => (
-          <View key={p.id} style={styles.fila}>
-            <Text style={styles.col}>{p.cantidad}</Text>
-            <Text style={styles.col}>{p.nombre}</Text>
-            <Text style={styles.col}>${p.precio}</Text>
-          </View>
-        ))}
+        <ScrollView style={styles.scrollProductos}>
+          {compra.productos.map((p) => (
+            <View key={p.id} style={styles.fila}>
+              <Text style={styles.col}>{p.cantidad}</Text>
+              <Text style={styles.col}>{p.nombre}</Text>
+              <Text style={styles.col}>${p.precio}</Text>
+            </View>
+          ))}
+        </ScrollView>
 
         <View style={styles.totalRow}>
           <Text style={{ fontWeight: 'bold' }}>TOTAL</Text>
           <Text style={{ marginLeft: 'auto' }}>${total}</Text>
         </View>
-      </ScrollView>
+      </View>
     </View>
   );
 }
@@ -115,6 +117,9 @@ const styles = StyleSheet.create({
     },
     cardText: {
       color: '#fff',
+    },
+    scrollProductos: {
+      maxHeight: 400, //limitar productos mostrados sin scrolls
     },
   });
   

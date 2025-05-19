@@ -5,7 +5,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 
 import { sugerenciasAnteriores, resultadosBusqueda } from '../data/mockData';   //mockdata
 
-const URL = "http://192.168.100.33:8000"; // Cambia si es necesario
+const URL = "http://192.168.1.91:8000"; // Cambia si es necesario
 
 export default function ListaDetalles() {
   const route = useRoute();
@@ -157,47 +157,57 @@ export default function ListaDetalles() {
 
       {/* Productos agregados */}
       <View style={styles.listaContainer}>
-        {products.map((p) => (
-        <View key={p.id} style={styles.productoItem}>
-          <TouchableOpacity onPress={() => changeQuantity(p.id, -1)} style={styles.qtyBtn}><Text>-</Text></TouchableOpacity>
-          <Text style={styles.cantidad}>{p.quantity}</Text>
-          <TouchableOpacity onPress={() => changeQuantity(p.id, 1)} style={styles.qtyBtn}><Text>+</Text></TouchableOpacity>
-          <Text style={styles.productoTexto}>{p.name}</Text>
-          <TouchableOpacity onPress={() => deleteProduct(p.id)} style={styles.eliminarBtn}>
-            <Ionicons name="close" size={16} color="#000" />
-          </TouchableOpacity>
-        </View>
-      ))}
+        <ScrollView style={styles.scrollInterno}>
+          {products.map((p) => (
+            <View key={p.id} style={styles.productoItem}>
+              <TouchableOpacity onPress={() => changeQuantity(p.id, -1)} style={styles.qtyBtn}><Text>-</Text></TouchableOpacity>
+              <Text style={styles.cantidad}>{p.quantity}</Text>
+              <TouchableOpacity onPress={() => changeQuantity(p.id, 1)} style={styles.qtyBtn}><Text>+</Text></TouchableOpacity>
+              <Text style={styles.productoTexto}>{p.name}</Text>
+              <TouchableOpacity onPress={() => deleteProduct(p.id)} style={styles.eliminarBtn}>
+                <Ionicons name="close" size={16} color="#000" />
+              </TouchableOpacity>
+            </View>
+          ))}
+        </ScrollView>
       </View>
+
 
 
       {/* ELEMENTOS NO FUNCIONALES */}
       {/* Sugerencias */}
       <Text style={styles.subtitulo}>Sugerencias de compras anteriores</Text>
-      <View style={styles.chipsContainer}>
-        {sugerenciasAnteriores.map((s, i) => (
-          <TouchableOpacity key={i} style={styles.chip} onPress={() => addProducts(s)}>
-            <Text>+ {s}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.scrollChipsContainer}>
+          {sugerenciasAnteriores.map((s, i) => (
+            <TouchableOpacity key={i} style={styles.chip} onPress={() => addProducts(s)}>
+              <Text>+ {s}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
 
       {/*buscador*/}
-      <Text style={styles.subtitulo}>Buscar ingredientes de recetas</Text>
-      <View style={styles.searchContainer}>
-        <Ionicons name="search" size={20} color="gray" />
-        <TextInput style={styles.searchInput} placeholder="What are you looking for?" />
-        <TouchableOpacity style={styles.buscarBtn}><Text style={{ color: 'white' }}>Buscar</Text></TouchableOpacity>
-      </View>
+        <Text style={styles.subtitulo}>Buscar ingredientes de recetas</Text>
+        <View style={styles.searchContainer}>
+          <Ionicons name="search" size={20} color="gray" />
+          <TextInput style={styles.searchInput} placeholder="What are you looking for?" />
+          <TouchableOpacity style={styles.buscarBtn}><Text style={{ color: 'white' }}>Buscar</Text></TouchableOpacity>
+        </View>
 
-      {/*resultados de búsqueda*/}
-      <View style={styles.chipsContainer}>
-        {resultadosBusqueda.map((s, i) => (
-          <TouchableOpacity key={i} style={styles.chip} onPress={() => agregarProducto(s)}>
-            <Text>+ {s}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.scrollChipsContainer}
+        >
+          {resultadosBusqueda.map((s, i) => (
+            <TouchableOpacity key={i} style={styles.chip} onPress={() => addProducts(s)}>
+              <Text>+ {s}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
 
 
       {/*boton para iniciar compra*/}
@@ -278,11 +288,11 @@ const styles = StyleSheet.create({
       borderRadius: 6,
       marginBottom: 6,
     },
-    chipsContainer: {
+    scrollChipsContainer: {
       flexDirection: 'row',
-      flexWrap: 'wrap',
+      paddingVertical: 4,
       gap: 8,
-      marginBottom: 20,
+      paddingLeft: 4,
     },
     chip: {
       backgroundColor: '#eee',
@@ -318,6 +328,8 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       marginTop: 20,
     },
-    
+    scrollInterno: {
+      maxHeight: 5 * 40, //manejar las filas de productos a mostrar
+    },
   });
   
