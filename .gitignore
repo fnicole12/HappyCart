@@ -35,10 +35,11 @@ yarn-error.*
 MongoAPI/.env
 
 # python cache
+__pycache__
 MongoAPI/__pycache__
 app/__pycache__
-ingredientes_buscar/ingredientes_buscar/__pycache__
-ingredientes_buscar/ingredientes_buscar/spiders/__pycache__
+ingredientes/ingredientes/__pycache__
+ingredientes/ingredientes/spiders/__pycache__
 
 # typescript
 *.tsbuildinfo

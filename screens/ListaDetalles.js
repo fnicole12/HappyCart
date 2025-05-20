@@ -223,6 +223,8 @@ export default function ListaDetalles() {
             </TouchableOpacity>
           ))}
         </ScrollView>
+        {/*----------------------*/}
+
 
       {/*buscador*/}
         <Text style={styles.subtitulo}>Buscar ingredientes de recetas</Text>
