@@ -1,4 +1,4 @@
-# Scrapy settings for ingredientes_buscar project
+# Scrapy settings for ingredientes project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -7,17 +7,17 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = "ingredientes_buscar"
+BOT_NAME = "ingredientes"
 
-SPIDER_MODULES = ["ingredientes_buscar.spiders"]
-NEWSPIDER_MODULE = "ingredientes_buscar.spiders"
+SPIDER_MODULES = ["ingredientes.spiders"]
+NEWSPIDER_MODULE = "ingredientes.spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = "ingredientes_buscar (+http://www.yourdomain.com)"
+#USER_AGENT = "ingredientes (+http://www.yourdomain.com)"
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -45,13 +45,13 @@ ROBOTSTXT_OBEY = True
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    "ingredientes_buscar.middlewares.IngredientesBuscarSpiderMiddleware": 543,
+#    "ingredientes.middlewares.IngredientesSpiderMiddleware": 543,
 #}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    "ingredientes_buscar.middlewares.IngredientesBuscarDownloaderMiddleware": 543,
+#    "ingredientes.middlewares.IngredientesDownloaderMiddleware": 543,
 #}
 
 # Enable or disable extensions
@@ -63,7 +63,7 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 #ITEM_PIPELINES = {
-#    "ingredientes_buscar.pipelines.IngredientesBuscarPipeline": 300,
+#    "ingredientes.pipelines.IngredientesPipeline": 300,
 #}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
