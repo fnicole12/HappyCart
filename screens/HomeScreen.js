@@ -2,8 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, FlatList, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-
-const URL = "http://192.168.1.91:8000";     //cambiar segun necesario
+import { URL } from './constants';
 
 export default function HomeScreen( { route }) {
   const navigation = useNavigation();
@@ -63,16 +62,20 @@ export default function HomeScreen( { route }) {
       {/* Opciones */}
       <View style={styles.opcionesContainer}>
         <View style={styles.filaOpciones}>
+          {/* Crear nueva lista */}
           <TouchableOpacity style={styles.opcion} onPress={navNewList}>
             <Ionicons name="clipboard-outline" size={24} color="white" />
             <Text style={styles.opcionTexto}>Nueva lista de mandado</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.opcion} onPress={() => navigation.navigate('HistorialScreen')}>
+           {/* Historial */}
+          <TouchableOpacity style={styles.opcion} onPress={() => navigation.navigate('HistorialScreen', user ={ familyId: familyId, phone: phone })}>
             <Ionicons name="calendar-outline" size={24} color="white" />
             <Text style={styles.opcionTexto}>Ver compras anteriores</Text>
           </TouchableOpacity>
         </View>
-        
+
+
+        {/* Unirse a nueva familia */}
         <View style={styles.filaUnir}>
           <TouchableOpacity style={styles.opcion} onPress={() => setMostrarCodigo(!mostrarCodigo)}>
             <Ionicons name="people-outline" size={24} color="white" />

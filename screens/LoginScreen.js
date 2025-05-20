@@ -2,8 +2,7 @@ import React from 'react';
 import{ useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
-const URL = "http://192.168.1.91:8000";     //cambiar segun necesario
+import { URL } from './constants';
 
 export default function LoginScreen() {
   const [phone, setPhone] = useState('');
@@ -29,16 +28,7 @@ export default function LoginScreen() {
       
       if(response.ok){
         //alert('Login exitoso');
-        //navigation.navigate('HomeScreen', { user:{ familyId: data.family_id, phone: data.phone, name: data.name } });   //se pasa la info a HomeScreen
-        navigation.reset({
-          index: 0,
-          routes: [
-            {
-              name: 'HomeScreen',
-              params: { user: { familyId: data.family_id, phone: data.phone, name: data.name } },
-            },
-          ],
-        });
+        navigation.navigate('HomeScreen', { user:{ familyId: data.family_id, phone: data.phone, name: data.name } });   //se pasa la info a HomeScreen
       }
       else
         alert(data.detail || 'Error al iniciar sesión');

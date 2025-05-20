@@ -1,0 +1,1 @@
+export const URL = 'http://10.97.41.117:8000';        //cambiar segun necesario

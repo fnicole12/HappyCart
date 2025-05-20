@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import { URL } from './constants';
 
 import { sugerenciasAnteriores, resultadosBusqueda } from '../data/mockData';   //mockdata
 
-const URL = "http://192.168.1.91:8000"; // Cambia si es necesario
 
 export default function ListaDetalles() {
   const route = useRoute();
@@ -22,6 +22,7 @@ export default function ListaDetalles() {
   //estados locales
   const [title, setTitle] = useState(list ? list.title : '');
   const [newProduct, setNewProduct] = useState('');
+  
   //inicializa productos con ids aleatorios
   const [products, setProducts] = useState(() => {
     if (list && list.products) {
@@ -33,6 +34,7 @@ export default function ListaDetalles() {
     return [];
   });
 
+  //buscador
   const handleBuscar = async () => {
   if (!query.trim()) {
     alert("Escribe una receta para buscar");
