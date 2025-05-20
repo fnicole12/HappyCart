@@ -10,7 +10,10 @@ const URL = "http://192.168.1.91:8000"; // Cambia si es necesario
 export default function ListaDetalles() {
   const route = useRoute();
   const navigation = useNavigation();
-    
+
+  const [query, setQuery] = useState('');
+  const [resultadosScrapy, setResultadosScrapy] = useState([]);
+
   const mode = route.params.mode || 'new';  // 'new' o 'edit'
   const familyId = route.params.familyId;
   const phone = route.params.phone;
@@ -29,6 +32,39 @@ export default function ListaDetalles() {
     }
     return [];
   });
+
+  const handleBuscar = async () => {
+  if (!query.trim()) {
+    alert("Escribe una receta para buscar");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${URL}/scrapear/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ nombre: query }),
+    });
+
+    const data = await response.json();
+    console.log("Resultados:", data);
+
+    if (data && data.ingredientes) {
+      const ingredientesLimpios = data.ingredientes
+      .map(s => s.replace(/\s+/g, ' ').trim())  // quita saltos de línea y espacios múltiples
+      .filter(s => s.length > 0);               // elimina vacíos
+
+      setResultadosScrapy(ingredientesLimpios);
+    } else {
+      setResultadosScrapy([]);
+    }
+  } catch (error) {
+    console.error("Error al buscar:", error);
+    alert("No se pudo conectar al servidor");
+  }
+  };
 
 
   //manejo de productos, ids aleatorios
@@ -192,8 +228,10 @@ export default function ListaDetalles() {
         <Text style={styles.subtitulo}>Buscar ingredientes de recetas</Text>
         <View style={styles.searchContainer}>
           <Ionicons name="search" size={20} color="gray" />
-          <TextInput style={styles.searchInput} placeholder="What are you looking for?" />
-          <TouchableOpacity style={styles.buscarBtn}><Text style={{ color: 'white' }}>Buscar</Text></TouchableOpacity>
+          <TextInput style={styles.searchInput} placeholder="What are you looking for?" value={query} onChangeText={setQuery}/>
+          <TouchableOpacity style={styles.buscarBtn} onPress={handleBuscar}>
+            <Text style={{ color: 'white' }}>Buscar</Text>
+          </TouchableOpacity>
         </View>
 
         <ScrollView
@@ -201,7 +239,7 @@ export default function ListaDetalles() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.scrollChipsContainer}
         >
-          {resultadosBusqueda.map((s, i) => (
+          {resultadosScrapy.map((s, i) => (
             <TouchableOpacity key={i} style={styles.chip} onPress={() => addProducts(s)}>
               <Text>+ {s}</Text>
             </TouchableOpacity>
