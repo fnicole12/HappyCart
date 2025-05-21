@@ -154,6 +154,17 @@ async def buy_list(buyList: BuyList):
     result = await db.purchase.insert_one(buyList.model_dump())
     return JSONResponse(content={"message": "Compra registrada", "buy_id": str(result.inserted_id)}, status_code=201)
 
+#records
+@app.get("/record")
+async def get_record(family_id: str = Query(...)):
+    purchases = []
+    async for purchase in db.purchase.find({"family_id": family_id}):
+        purchase["_id"] = str(purchase["_id"])
+        purchases.append(purchase)
+    return  {"purchases": purchases}
+
+
+
 #webscraping
 @app.post("/scrapear/")
 def scrapear_receta(req: RecetaRequest):

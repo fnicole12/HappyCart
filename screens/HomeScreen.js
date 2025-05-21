@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback} from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, FlatList, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -67,7 +67,7 @@ export default function HomeScreen( { route }) {
             <Text style={styles.opcionTexto}>Nueva lista de mandado</Text>
           </TouchableOpacity>
            {/* Historial */}
-          <TouchableOpacity style={styles.opcion} onPress={() => navigation.navigate('HistorialScreen', user ={ familyId: familyId, phone: phone })}>
+          <TouchableOpacity style={styles.opcion} onPress={() => navigation.navigate('HistorialScreen', {user:{ familyId: familyId, phone: phone }})}>
             <Ionicons name="calendar-outline" size={24} color="white" />
             <Text style={styles.opcionTexto}>Ver compras anteriores</Text>
           </TouchableOpacity>

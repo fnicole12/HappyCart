@@ -53,7 +53,18 @@ export default function CompraScreen() {
 
 
   //comprar y guardar
-  const handleBuy = async () => {
+  const handleBuy = async () => {    
+    //verificar supermercado
+    if(!supermarket){
+      alert("Ingrese el nombre del supermercado");
+      return;
+    }
+    //verificar que haya productos comprados
+    const comprados = products.filter(p => p.marked && p.price > 0);
+      if (comprados.length === 0) {
+      alert('Marca al menos un producto como comprado y agrega su precio');
+      return;
+    }
     const buy ={
       family_id: familyId,
       phone: phone,
@@ -62,17 +73,6 @@ export default function CompraScreen() {
       products: comprados,
       total: parseFloat(calculateTotal()),
       date: new Date().toISOString()
-    }
-    //verificar supermercado
-    if(!supermarket){
-      alert("Ingrese el nombre del supermercado");
-      return;
-    }
-    //verificar que haya productos comprados
-    const comprados = products.filter(p => p.marked);
-      if (comprados.length === 0) {
-      alert('Marca al menos un producto como comprado');
-      return;
     }
     
     try{
