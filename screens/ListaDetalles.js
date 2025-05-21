@@ -34,7 +34,8 @@ export default function ListaDetalles() {
     return [];
   });
 
-  //buscador
+
+  //Buscador
   const handleBuscar = async () => {
   if (!query.trim()) {
     alert("Escribe una receta para buscar");
@@ -89,7 +90,6 @@ export default function ListaDetalles() {
     );
   };
 
-
   //guardar lista
   const localProducts = products.map(({name, quantity}) => ({name, quantity}));
   const handleSaveList = async () => {
@@ -136,7 +136,6 @@ export default function ListaDetalles() {
         data = await response.json();
       }
       
-
       if(response.ok){
         alert('Lista guardada :)');
         navigation.navigate('HomeScreen', { user: { familyId: familyId, phone } });
@@ -255,7 +254,7 @@ export default function ListaDetalles() {
       {/*boton para iniciar compra*/}
       {mode === 'edit' && (
         <View>
-          <TouchableOpacity style={styles.iniciarCompraBtn} onPress={() => navigation.navigate('Compra')}> 
+          <TouchableOpacity style={styles.iniciarCompraBtn} onPress={() => navigation.navigate('Compra', { user: { familyId: familyId, phone }, list: { title, products } })}> 
             <Text style={{ color: 'white', fontWeight: 'bold' }}>Iniciar compra</Text>
           </TouchableOpacity>
         </View>

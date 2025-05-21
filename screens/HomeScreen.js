@@ -26,7 +26,6 @@ export default function HomeScreen( { route }) {
   useFocusEffect(
     useCallback(() => {
       if (familyId) {
-        console.log(familyId);
         const URL_UPDATED = URL + "/lists?family_id=" + familyId;
         fetch(URL_UPDATED)    //http get request
           .then(res => res.json())

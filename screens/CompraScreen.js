@@ -2,66 +2,119 @@ import React, { useState } from 'react';
 import {View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView, Switch,} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import { listasDeMandado } from '../data/mockData';
+
+//import { listasDeMandado } from '../data/mockData';
+import { URL } from './constants';
 
 export default function CompraScreen() {
-    const navigation = useNavigation();
-    const route = useRoute();
-    const { listaId } = route.params ?? {};
-    
-  //busca el id que se manda de ListaDetalles
-  const lista = listasDeMandado.find(l => l.id === listaId);
-    
-  const [productos, setProductos] = useState(
-    lista?.productos.map(p => ({ ...p, precio: '', comprado: false })) || []
+  const route = useRoute();
+  const navigation = useNavigation();
+
+  const familyId = route.params.user.familyId;
+  const phone = route.params.user.phone;
+  const title = route.params.list.title;
+  const listProducts = route.params.list.products;
+  
+  const [supermarket, setSupermarket] = useState('');
+  //mapear productos + precio y si fue "comprado"
+  const [products, setProducts] = useState(() =>
+    listProducts.map(p => ({
+      ...p,
+      price:'',
+      marked: false,
+    }))
   );
-    
-  const titulo = lista?.titulo ?? 'Mandado';
-    
 
-  const [supermercado, setSupermercado] = useState('');
-
-  const actualizarPrecio = (id, valor) => {
-    setProductos(prev =>
+  //buscar precio
+  const updatePrice = (id, value) => {
+    setProducts(prev =>
       prev.map(p =>
-        p.id === id ? { ...p, precio: valor } : p
+        p.id === id ? { ...p, price: parseFloat(value) || 0 } : p
       )
     );
   };
 
-  const toggleCompra = (id) => {
-    setProductos(prev =>
+  //toggle compra
+  const toggleBuy = id => {
+    setProducts(prev =>
       prev.map(p =>
-        p.id === id ? { ...p, comprado: !p.comprado } : p
+        p.id === id ? { ...p, marked: !p.marked } : p
       )
     );
   };
 
-  const calcularTotal = () => {
-    return productos.reduce((total, p) => {
-      const precio = parseFloat(p.precio);
-      return total + (isNaN(precio) ? 0 : precio);
-    }, 0).toFixed(2);
+  //calcular total
+  const calculateTotal = () => {
+    return products
+      .filter(p => p.marked)
+      .reduce((total, p) => total + p.price * p.quantity, 0)
+      .toFixed(2);
   };
+
+
+  //comprar y guardar
+  const handleBuy = async () => {
+    const buy ={
+      family_id: familyId,
+      phone: phone,
+      supermarket: supermarket,
+      title: title,
+      products: comprados,
+      total: parseFloat(calculateTotal()),
+      date: new Date().toISOString()
+    }
+    //verificar supermercado
+    if(!supermarket){
+      alert("Ingrese el nombre del supermercado");
+      return;
+    }
+    //verificar que haya productos comprados
+    const comprados = products.filter(p => p.marked);
+      if (comprados.length === 0) {
+      alert('Marca al menos un producto como comprado');
+      return;
+    }
+    
+    try{
+      const URL_BUY = URL + "/buy";
+      response = await fetch(URL_BUY, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(buy),
+      });
+      const data = await response.json();
+
+      if(response.ok){
+        alert("Compra guardada");
+        navigation.navigate('HomeScreen', { user: { familyId, phone } });
+      }
+      else{
+        alert(data.detail || 'Error al guardar la compra');
+      }
+    }catch(error){
+      console.log(error);
+      alert('No se pudo conectar al servidor');
+    }
+  }
+
 
   return (
     <View style={styles.container}>
-      {/*flecha regresar*/}
       <TouchableOpacity onPress={() => navigation.goBack()}>
         <Ionicons name="arrow-back" size={24} />
       </TouchableOpacity>
 
-      {/*selector supermercado */}
       <TextInput
         style={styles.superInput}
         placeholder="Nombre del supermercado"
-        value={supermercado}
-        onChangeText={setSupermercado}
+        value={supermarket}
+        onChangeText={setSupermarket}
       />
-      
-      <Text style={styles.titulo}>Mandado</Text>
 
-      {/*tabla */}
+      <Text style={styles.titulo}>{title}</Text>
+
       <View style={styles.tabla}>
         <View style={styles.tablaHeader}>
           <Text style={styles.col}>✓</Text>
@@ -70,25 +123,24 @@ export default function CompraScreen() {
           <Text style={styles.col}>Precio</Text>
         </View>
 
-        {/*scroll para limitar prod*/}
         <ScrollView style={styles.scrollProductos}>
-          {productos.map((p) => (
+          {products.map(p => (
             <View key={p.id} style={styles.fila}>
-              <TouchableOpacity onPress={() => toggleCompra(p.id)}>
+              <TouchableOpacity onPress={() => toggleBuy(p.id)}>
                 <Ionicons
-                  name={p.comprado ? 'checkbox' : 'square-outline'}
+                  name={p.marked ? 'checkbox' : 'square-outline'}
                   size={24}
-                  color={p.comprado ? '#f5ac70' : '#ccc'}
+                  color={p.marked ? '#f5ac70' : '#ccc'}
                 />
               </TouchableOpacity>
-              <Text style={styles.col}>{p.cantidad}</Text>
-              <Text style={styles.col}>{p.nombre}</Text>
+              <Text style={styles.col}>{p.quantity}</Text>
+              <Text style={styles.col}>{p.name}</Text>
               <TextInput
                 style={styles.precioInput}
                 placeholder="$"
                 keyboardType="numeric"
-                value={p.precio}
-                onChangeText={(v) => actualizarPrecio(p.id, v)}
+                value={p.price.toString()}
+                onChangeText={value => updatePrice(p.id, value)}
               />
             </View>
           ))}
@@ -96,96 +148,88 @@ export default function CompraScreen() {
 
         <View style={styles.totalRow}>
           <Text style={{ fontWeight: 'bold' }}>TOTAL</Text>
-          <Text style={{ marginLeft: 'auto' }}>${calcularTotal()}</Text>
+          <Text style={{ marginLeft: 'auto' }}>${calculateTotal()}</Text>
         </View>
       </View>
 
-
-      <TouchableOpacity style={styles.finalizarBtn}>
+      <TouchableOpacity style={styles.finalizarBtn} onPress={handleBuy}>
         <Text style={styles.finalizarText}>Finalizar compra</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
-
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      padding: 20,
-      backgroundColor: '#fff',
-    },
-    backBtn: {
-      marginBottom: 10,
-    },
-    superInput: {
-      borderBottomWidth: 1,
-      borderColor: '#ccc',
-      paddingVertical: 6,
-      paddingHorizontal: 4,
-      fontWeight: 'bold',
-      alignSelf: 'flex-end',
-      minWidth: 160,
-      marginBottom: 10,
-      textAlign: 'right',
-    },
-
-    titulo: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      marginVertical: 20,
-    },
-    tabla: {
-      borderWidth: 1,
-      borderColor: '#f5ac70',
-      borderRadius: 12,
-      padding: 10,
-      marginBottom: 20,
-      backgroundColor: '#fdfdfd',
-    },
-    tablaHeader: {
-      flexDirection: 'row',
-      marginBottom: 8,
-      justifyContent: 'space-between',
-    },
-    fila: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 10,
-    },
-    col: {
-      flex: 1,
-      textAlign: 'center',
-    },
-    precioInput: {
-      borderWidth: 1,
-      borderColor: '#ccc',
-      padding: 4,
-      borderRadius: 6,
-      width: 60,
-      textAlign: 'center',
-    },
-    totalRow: {
-      flexDirection: 'row',
-      marginTop: 10,
-      justifyContent: 'space-between',
-      paddingTop: 10,
-      borderTopWidth: 1,
-      borderTopColor: '#ccc',
-    },
-    finalizarBtn: {
-      backgroundColor: '#f5ac70',
-      padding: 12,
-      alignItems: 'center',
-      borderRadius: 10,
-    },
-    finalizarText: {
-      color: '#fff',
-      fontWeight: 'bold',
-    },
-    scrollProductos: {
-      maxHeight: 600, //controlar num prod en pantalla
-    },
-
-  });
-  
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  superInput: {
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
+    paddingVertical: 6,
+    paddingHorizontal: 4,
+    fontWeight: 'bold',
+    alignSelf: 'flex-end',
+    minWidth: 160,
+    marginBottom: 10,
+    textAlign: 'right',
+  },
+  titulo: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginVertical: 20,
+  },
+  tabla: {
+    borderWidth: 1,
+    borderColor: '#f5ac70',
+    borderRadius: 12,
+    padding: 10,
+    marginBottom: 20,
+    backgroundColor: '#fdfdfd',
+  },
+  tablaHeader: {
+    flexDirection: 'row',
+    marginBottom: 8,
+    justifyContent: 'space-between',
+  },
+  fila: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  col: {
+    flex: 1,
+    textAlign: 'center',
+  },
+  precioInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 4,
+    borderRadius: 6,
+    width: 60,
+    textAlign: 'center',
+  },
+  totalRow: {
+    flexDirection: 'row',
+    marginTop: 10,
+    justifyContent: 'space-between',
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
+  },
+  finalizarBtn: {
+    backgroundColor: '#f5ac70',
+    padding: 12,
+    alignItems: 'center',
+    borderRadius: 10,
+  },
+  finalizarText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  scrollProductos: {
+    maxHeight: 600,
+  },
+});

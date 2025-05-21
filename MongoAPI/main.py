@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Request
 from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
@@ -9,7 +9,6 @@ import os
 import uuid
 import subprocess
 import json
-
 
 load_dotenv()   #variables de entorno
 app = FastAPI()     #incializa instancia FastAPI
@@ -24,8 +23,7 @@ db = client.happycart
 # def home():
 #     return {"message": "I'ts me"}, {"status": 200}
 
-####################################################################################################################
-#modelos de datos
+##modelos de datos######################################################################################################
 class UserLogin(BaseModel):
     phone: str
     password: str
@@ -43,9 +41,26 @@ class NewList(BaseModel):
     title: str
     products: list = []
 
+class Product(BaseModel):
+    id: str
+    name: str
+    quantity: int
+    price: float
+    marked: bool
+class BuyList(BaseModel):
+    family_id: str
+    phone: str
+    supermarket: str
+    title: str
+    products: list[Product] = []
+    total: float
+    date: str
+
+
 class RecetaRequest(BaseModel):
     nombre: str
-####################################################################################################################
+
+##APIS###################################################################################################################
 #login
 @app.post("/login")
 async def login(user: UserLogin):
@@ -132,6 +147,12 @@ async def update_list(list_id: str, updated: dict):
         return {"message": "Lista actualizada"}
     else:
         return JSONResponse(content={"detail": "Lista no encontrada"}, status_code=404)
+
+#buy list
+@app.post("/buy")
+async def buy_list(buyList: BuyList):
+    result = await db.purchase.insert_one(buyList.model_dump())
+    return JSONResponse(content={"message": "Compra registrada", "buy_id": str(result.inserted_id)}, status_code=201)
 
 #webscraping
 @app.post("/scrapear/")

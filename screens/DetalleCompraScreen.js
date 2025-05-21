@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import { URL} from './constants';
 import { historialCompras } from '../data/mockData';
 
 export default function DetalleCompraScreen() {

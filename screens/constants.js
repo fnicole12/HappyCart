@@ -1,1 +1,1 @@
-export const URL = 'http://10.97.41.117:8000';        //cambiar segun necesario
+export const URL = 'http://192.168.100.33:8000';        //cambiar segun necesario

@@ -31,8 +31,9 @@ yarn-error.*
 *.pem
 
 # local env files
-.env*.local
+screens/constants.js
 MongoAPI/.env
+
 
 # python cache
 __pycache__
