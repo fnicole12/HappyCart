@@ -66,7 +66,7 @@ export default function HistorialScreen() {
           return (
             <TouchableOpacity
               onPress={() =>
-                navigation.navigate('DetalleCompra', { compraId: item._id })
+                navigation.navigate('DetalleCompra', { purchase: item })
               }
             >
               <View style={styles.card}>
