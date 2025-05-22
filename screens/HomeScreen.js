@@ -10,8 +10,7 @@ export default function HomeScreen( { route }) {
   const [familyId, setFamilyId] = useState('');
   const [phone, setPhone] = useState('');
   const [lists, setLists] = useState([]);
-  const [mostrarCodigo, setMostrarCodigo] = useState(false);
-  const [codigoFamilia, setCodigoFamilia] = useState('');
+  const [showCode, setShowCode] = useState(false);
 
 
   //carga los datos del usuario
@@ -38,13 +37,33 @@ export default function HomeScreen( { route }) {
     }, [familyId])
   );
 
-  //navegar a crear lista
-  const navNewList = () => {
-    navigation.navigate('ListaDetalles', {
-      mode: 'new',
-      familyId: familyId,
-      phone: phone,
-    });
+  //unirte a otra familia
+  const handleJoinFamily = async () => {
+    try{
+      URL_JOIN = URL + "/join";
+      const response = await fetch(URL_JOIN, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          familyId: familyId,
+          phone: phone,
+        }),
+      })
+      data = await response.json();
+      if(response.ok){
+        alert("Unido a la familia.");
+        console.log("Nuevo familyID: ", familyId);
+        navigation.navigate('HomeScreen', { user: { familyId, phone } });
+      }
+      else{
+        alert(data.detail || "Error al unirse a la familia");
+      }
+    }catch(error){
+      console.log(error);
+      alert('No se pudo conectar al servidor');
+    }
   }
   
 
@@ -62,7 +81,7 @@ export default function HomeScreen( { route }) {
       <View style={styles.opcionesContainer}>
         <View style={styles.filaOpciones}>
           {/* Crear nueva lista */}
-          <TouchableOpacity style={styles.opcion} onPress={navNewList}>
+          <TouchableOpacity style={styles.opcion} onPress={() => navigation.navigate('ListaDetalles', {mode: 'new',familyId: familyId,phone: phone,})}>
             <Ionicons name="clipboard-outline" size={24} color="white" />
             <Text style={styles.opcionTexto}>Nueva lista de mandado</Text>
           </TouchableOpacity>
@@ -76,20 +95,20 @@ export default function HomeScreen( { route }) {
 
         {/* Unirse a nueva familia */}
         <View style={styles.filaUnir}>
-          <TouchableOpacity style={styles.opcion} onPress={() => setMostrarCodigo(!mostrarCodigo)}>
+          <TouchableOpacity style={styles.opcion} onPress={() => setShowCode(!showCode)}>
             <Ionicons name="people-outline" size={24} color="white" />
             <Text style={styles.opcionTexto}>Unirte a familia</Text>
           </TouchableOpacity>
 
-          {mostrarCodigo && (
+          {showCode && (
             <View style={styles.codigoGroup}>
               <TextInput
                 style={styles.codigoInput}
                 placeholder="Código"
-                value={codigoFamilia}
-                onChangeText={setCodigoFamilia}
+                value={familyId}
+                onChangeText={setFamilyId}
               />
-              <TouchableOpacity style={styles.confirmarBtn} onPress={() => console.log('Código:', codigoFamilia)}>
+              <TouchableOpacity style={styles.confirmarBtn} onPress={handleJoinFamily}>
                 <Text style={styles.confirmarTexto}>Confirmar</Text>
               </TouchableOpacity>
             </View>

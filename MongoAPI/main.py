@@ -56,6 +56,9 @@ class BuyList(BaseModel):
     total: float
     date: str
 
+class JoinRequest(BaseModel):
+    familyId: str
+    phone: str
 
 class RecetaRequest(BaseModel):
     nombre: str
@@ -163,7 +166,22 @@ async def get_record(family_id: str = Query(...)):
         purchases.append(purchase)
     return  {"purchases": purchases}
 
-
+#join family
+@app.post("/join")
+async def join_family(data: JoinRequest):
+    family = await db.families.find_one({"_id": data.familyId})
+    if not family:
+        return JSONResponse(content={"detail": "Código de familia no encontrado"}, status_code=404)
+    
+    await db.families.update_one(
+        {"_id": data.familyId},
+        {"$addToSet": {"members": data.phone}}
+    )
+    await db.users.update_one(
+        {"phone": data.phone},
+        {"$set": {"family_id": data.familyId}}
+    )
+    return JSONResponse(content={"message": "Unido a la familia"}, status_code=200)
 
 #webscraping
 @app.post("/scrapear/")

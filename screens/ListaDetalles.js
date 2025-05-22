@@ -70,7 +70,7 @@ export default function ListaDetalles() {
   };
 
 
-  //manejo de productos, ids aleatorios
+  //Manejo de productos, ids aleatorios
   const addProducts = (name) => {
     setProducts((prev) => [
       ...prev,
