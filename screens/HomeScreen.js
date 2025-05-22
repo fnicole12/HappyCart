@@ -91,8 +91,6 @@ export default function HomeScreen( { route }) {
             <Text style={styles.opcionTexto}>Ver compras anteriores</Text>
           </TouchableOpacity>
         </View>
-
-
         {/* Unirse a nueva familia */}
         <View style={styles.filaUnir}>
           <TouchableOpacity style={styles.opcion} onPress={() => setShowCode(!showCode)}>
@@ -114,7 +112,11 @@ export default function HomeScreen( { route }) {
             </View>
           )}
         </View>
+        <TouchableOpacity onPress={() => navigation.navigate('CameraScreen', { familyId, phone })} >
+          <Text>Ir a la cámara</Text>
+        </TouchableOpacity>
       </View>
+
 
      {/* Listas activas */}
       <Text style={styles.seccionTitulo}>Listas de Mandado</Text>

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, Request
+from fastapi import FastAPI, Query, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
@@ -17,11 +17,6 @@ app = FastAPI()     #incializa instancia FastAPI
 MONGO_URL = os.getenv("MONGO_URL")
 client = AsyncIOMotorClient(MONGO_URL)
 db = client.happycart
-
-# #prueba
-# @app.get("/test")
-# def home():
-#     return {"message": "I'ts me"}, {"status": 200}
 
 ##modelos de datos######################################################################################################
 class UserLogin(BaseModel):
@@ -60,9 +55,9 @@ class JoinRequest(BaseModel):
     familyId: str
     phone: str
 
+
 class RecetaRequest(BaseModel):
     nombre: str
-
 ##APIS###################################################################################################################
 #login
 @app.post("/login")
@@ -212,5 +207,29 @@ def scrapear_receta(req: RecetaRequest):
             return {"ingredientes": data.get("ingredientes", [])}
     except Exception as e:
         return {"error": str(e)}
+##PHOTO#################################################################################################################
+active_connections = {}
+async def broadcast_to_family(family_id, data, sender_ws=None):
+    connections = active_connections.get(family_id, [])
+    for ws in connections:
+        if ws != sender_ws:  #no mandarse a si mismo
+            await ws.send_json(data)
+
+@app.websocket("/ws/photos/{family_id}")
+async def websocket_photos(websocket: WebSocket, family_id: str):
+    await websocket.accept()
+    if family_id not in active_connections:
+        active_connections[family_id] = []
+    active_connections[family_id].append(websocket)
+
+    try:
+        while True:
+            data = await websocket.receive_json()
+            # data ejemplo: {"photo": "<base64>", "sender": "nombre_usuario"}
+            await broadcast_to_family(family_id, data, sender_ws=websocket)
+    except WebSocketDisconnect:
+        active_connections[family_id].remove(websocket)
+        if not active_connections[family_id]:
+            del active_connections[family_id]
 
 # uvicorn main:app --reload --host 0.0.0.0

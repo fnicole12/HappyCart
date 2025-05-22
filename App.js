@@ -7,6 +7,7 @@ import CompraScreen from './screens/CompraScreen';
 import HistorialScreen from './screens/HistorialScreen';
 import DetalleCompraScreen from './screens/DetalleCompraScreen';
 import SignUpScreen from './screens/SignUpScreen';
+import CameraScreen from './screens/CameraScreen';
 
 
 const Stack = createStackNavigator();
@@ -17,12 +18,12 @@ export default function App() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
-        
         <Stack.Screen name="HomeScreen" component={HomeScreen}/>
         <Stack.Screen name="ListaDetalles" component={ListaDetalles}/>
         <Stack.Screen name="Compra" component={CompraScreen} />
         <Stack.Screen name="HistorialScreen" component={HistorialScreen} />
         <Stack.Screen name="DetalleCompra" component={DetalleCompraScreen} />
+        <Stack.Screen name="CameraScreen" component={CameraScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
