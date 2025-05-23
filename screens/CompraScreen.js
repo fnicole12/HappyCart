@@ -102,9 +102,11 @@ export default function CompraScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
       <TouchableOpacity onPress={() => navigation.goBack()}>
         <Ionicons name="arrow-back" size={24} />
       </TouchableOpacity>
+      </View>
 
       <TextInput
         style={styles.superInput}
@@ -162,8 +164,19 @@ export default function CompraScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 50,
     padding: 20,
     backgroundColor: '#fff',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: 15,
+    paddingBottom: 20,
+    paddingRight: 30,
+    //borderBottomLeftRadius: 20,
+    //borderBottomRightRadius: 20,
   },
   superInput: {
     borderBottomWidth: 1,

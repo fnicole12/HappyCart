@@ -1,8 +1,9 @@
 import { useEffect, useState, useCallback} from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, FlatList, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, FlatList, TextInput, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { URL } from './constants';
+
 
 export default function HomeScreen( { route }) {
   const navigation = useNavigation();
@@ -85,19 +86,20 @@ export default function HomeScreen( { route }) {
             <Ionicons name="clipboard-outline" size={24} color="white" />
             <Text style={styles.opcionTexto}>Nueva lista de mandado</Text>
           </TouchableOpacity>
-           {/* Historial */}
-          <TouchableOpacity style={styles.opcion} onPress={() => navigation.navigate('HistorialScreen', {user:{ familyId: familyId, phone: phone }})}>
-            <Ionicons name="calendar-outline" size={24} color="white" />
-            <Text style={styles.opcionTexto}>Ver compras anteriores</Text>
-          </TouchableOpacity>
-        </View>
-        {/* Unirse a nueva familia */}
-        <View style={styles.filaUnir}>
+        
+          {/* Unirse a nueva familia */}
+          {/*<View style={styles.filaUnir}>*/}
           <TouchableOpacity style={styles.opcion} onPress={() => setShowCode(!showCode)}>
             <Ionicons name="people-outline" size={24} color="white" />
             <Text style={styles.opcionTexto}>Unirte a familia</Text>
           </TouchableOpacity>
 
+          {/* Historial */}
+          <TouchableOpacity style={styles.opcion} onPress={() => navigation.navigate('HistorialScreen', {user:{ familyId: familyId, phone: phone }})}>
+            <Ionicons name="calendar-outline" size={24} color="white" />
+            <Text style={styles.opcionTexto}>Ver compras anteriores</Text>
+          </TouchableOpacity>
+        </View>
           {showCode && (
             <View style={styles.codigoGroup}>
               <TextInput
@@ -111,14 +113,11 @@ export default function HomeScreen( { route }) {
               </TouchableOpacity>
             </View>
           )}
-        </View>
-        <TouchableOpacity onPress={() => navigation.navigate('CameraScreen', { familyId, phone })} >
-          <Text>Ir a la cámara</Text>
-        </TouchableOpacity>
+        {/*</View>*/}
       </View>
 
-
      {/* Listas activas */}
+      <View style={{ flex: 1, marginBottom: 130 }}>
       <Text style={styles.seccionTitulo}>Listas de Mandado</Text>
       <FlatList
         data={lists}
@@ -139,6 +138,13 @@ export default function HomeScreen( { route }) {
           </TouchableOpacity>
         )}
       />
+      </View>
+
+      <View style={styles.footer} >
+      <TouchableOpacity style={styles.opcion} onPress={() => navigation.navigate('CameraScreen', { familyId, phone })}>
+            <Ionicons name="camera" size={24} padding = {10} color="#f5ac70" backgroundColor= 'white' borderRadius = {40}/>
+      </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -147,7 +153,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: 60,
+    paddingTop: 40,
     paddingHorizontal: 20,
   },
   header: {
@@ -180,7 +186,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     justifyContent: 'center',
-    marginHorizontal: 15,
+    marginHorizontal: 10,
   },
   opcionTexto: {
     fontSize: 10,
@@ -238,16 +244,28 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   codigoGroup: {
-    flexDirection: 'column',
+    //flexDirection: 'column',
     alignItems: 'center',
     gap: 10, //codigo y confirmar demasiado juntos
   },
   filaUnir: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    //alignItems: 'center',
+    alignItems: 'center',
     justifyContent: 'center',
     flexWrap: 'wrap',
     marginTop: 10,
   },
+  footer: {
+    marginTop: 10,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 60,
+    backgroundColor: '#f5ac70',
+    //justifyContent: 'center',
+    height: 105,
+    alignItems: 'center',
+},
 });

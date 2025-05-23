@@ -70,6 +70,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
+    paddingTop: 17,
   },
   card: {
     backgroundColor: '#f5ac70',

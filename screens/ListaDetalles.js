@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
       borderRadius: 10,
     },
     label: {
-      marginTop: 20,
+      marginTop: 10,
       fontWeight: 'bold',
     },
     input: {
@@ -370,7 +370,7 @@ const styles = StyleSheet.create({
       marginTop: 20,
     },
     scrollInterno: {
-      maxHeight: 5 * 40, //manejar las filas de productos a mostrar
+      maxHeight: 4 * 40, //manejar las filas de productos a mostrar
     },
   });
   
