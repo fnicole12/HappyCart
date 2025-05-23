@@ -16,8 +16,9 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
+        {/*<Stack.Screen name="Login" component={LoginScreen} />*/}
+        {/*<Stack.Screen name="SignUp" component={SignUpScreen} />*/}
+        
         <Stack.Screen name="HomeScreen" component={HomeScreen}/>
         <Stack.Screen name="ListaDetalles" component={ListaDetalles}/>
         <Stack.Screen name="Compra" component={CompraScreen} />

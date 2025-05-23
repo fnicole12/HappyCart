@@ -34,6 +34,39 @@ export default function ListaDetalles() {
     return [];
   });
 
+  const handleBuscar = async () => {
+  if (!query.trim()) {
+    alert("Escribe una receta para buscar");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${URL}/scrapear/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ nombre: query }),
+    });
+
+    const data = await response.json();
+    console.log("Resultados:", data);
+
+    if (data && data.ingredientes) {
+      const ingredientesLimpios = data.ingredientes
+      .map(s => s.replace(/\s+/g, ' ').trim())  // quita saltos de línea y espacios múltiples
+      .filter(s => s.length > 0);               // elimina vacíos
+
+      setResultadosScrapy(ingredientesLimpios);
+    } else {
+      setResultadosScrapy([]);
+    }
+  } catch (error) {
+    console.error("Error al buscar:", error);
+    alert("No se pudo conectar al servidor");
+  }
+  };
+
 
   //Buscador
   const handleBuscar = async () => {
